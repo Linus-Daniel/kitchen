@@ -1,133 +1,193 @@
-"use client";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+"use client"
+import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
+import { FiShoppingCart, FiUser, FiHeart, FiSearch, FiMenu, FiX } from 'react-icons/fi';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useCart } from '@/context/cartContext';
 
-export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { scrollY } = useScroll();
-  const headerOpacity = useTransform(scrollY, [10, 100], [1, 2]);
+type Props = {
+  cartCount:number
+}
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const { cartCount } = useCart();
 
-  const navItems = [
-    { name: "Work", href: "/work" },
-    { name: "Studio", href: "#about" },
-    { name: "Insights", href: "/blogs" },
-    { name: "Contact", href: "#contact" },
+  const pathName = usePathname()
+
+  console.log(pathName)
+
+  const handleSearch = (e:FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/store?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  
+
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Menu', path: '/store' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   return (
-    <motion.header
-      style={{ opacity: headerOpacity }}
-      className={`fixed w-full z-50 transition-colors duration-500 ${
-        isScrolled ? "bg-white/90 backdrop-blur-md" : "bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex justify-between items-center">
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Link href="/" className="text-2xl font-light tracking-tight">
-              <span className="block font-bold">Umason Studio</span>
-              <span className="block text-xs tracking-widest">ARCHITECTURE</span>
-            </Link>
-          </motion.div>
+    <header className="bg-white shadow-sm sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center py-4">
+          {/* Logo */}
+          <Link href="/">
+            <motion.p 
+              className="text-2xl font-bold text-amber-600 flex items-center"
+              whileHover={{ scale: 1.05 }}
+            >
+              <span className="mr-1">🍔</span>
+              <span>FoodExpress</span>
+            </motion.p>
+          </Link>
 
           {/* Desktop Navigation */}
-          <motion.nav
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden md:block"
-          >
-            <ul className="flex space-x-8">
-              {navItems.map((item, index) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="relative group text-sm font-medium tracking-wider"
-                  >
-                    {item.name}
-                    <span className="absolute left-0 -bottom-1 w-0 h-px bg-amber-500 transition-all group-hover:w-full"></span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.nav>
+          <nav className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <Link href={link.path} key={link.name}>
+                <motion.p 
+                  className={`font-medium hover:text-amber-600 transition-colors ${
+                    pathName === link.path ? 'text-amber-600' : 'text-gray-700'
+                  }`}
+                  whileHover={{ y: -2 }}
+                >
+                  {link.name}
+                </motion.p>
+              </Link>
+            ))}
+          </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden focus:outline-none"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <div className="space-y-1.5">
-              <motion.span
-                animate={
-                  menuOpen
-                    ? { rotate: 45, y: 6, backgroundColor: "#f59e0b" }
-                    : { rotate: 0, backgroundColor: "#1c1917" }
-                }
-                className="block w-6 h-px bg-stone-900"
-              ></motion.span>
-              <motion.span
-                animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-                className="block w-6 h-px bg-stone-900"
-              ></motion.span>
-              <motion.span
-                animate={
-                  menuOpen
-                    ? { rotate: -45, y: -6, backgroundColor: "#f59e0b" }
-                    : { rotate: 0, backgroundColor: "#1c1917" }
-                }
-                className="block w-6 h-px bg-stone-900"
-              ></motion.span>
+          {/* Right side icons */}
+          <div className="flex items-center space-x-4">
+            {/* Search bar (desktop) */}
+            <motion.form 
+              onSubmit={handleSearch}
+              className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2"
+              whileHover={{ scale: 1.05 }}
+            >
+              <input
+                type="text"
+                placeholder="Search dishes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent outline-none w-40"
+              />
+              <button type="submit">
+                <FiSearch className="text-gray-500" />
+              </button>
+            </motion.form>
+
+            {/* Icons */}
+            <div className="flex items-center space-x-4">
+              <Link href="/account">
+                <motion.p 
+                  className="p-2 text-gray-700 hover:text-amber-600"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FiUser size={20} />
+                </motion.p>
+              </Link>
+              
+              <Link href="/favorites">
+                <motion.p 
+                  className="p-2 text-gray-700 hover:text-amber-600"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FiHeart size={20} />
+                </motion.p>
+              </Link>
+              
+              <Link href="/cart">
+                <motion.p 
+                  className="p-2 text-gray-700 hover:text-amber-600 relative"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <FiShoppingCart size={20} />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </motion.p>
+              </Link>
+              
+              {/* Mobile menu button */}
+              <button 
+                className="md:hidden p-2 text-gray-700"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              </button>
             </div>
-          </button>
+          </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile menu */}
         <AnimatePresence>
-          {menuOpen && (
+          {isMobileMenuOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
               className="md:hidden overflow-hidden"
             >
-              <ul className="py-4 space-y-4">
-                {navItems.map((item) => (
-                  <motion.li
-                    key={item.name}
-                    initial={{ x: 20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className="block py-2 text-lg"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {item.name}
+              <div className="py-4 space-y-4">
+                {/* Mobile search */}
+                <form 
+                  onSubmit={handleSearch}
+                  className="flex items-center bg-gray-100 rounded-full px-4 py-2"
+                >
+                  <input
+                    type="text"
+                    placeholder="Search dishes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-transparent outline-none flex-1"
+                  />
+                  <button type="submit">
+                    <FiSearch className="text-gray-500" />
+                  </button>
+                </form>
+
+                {/* Mobile navigation */}
+                <nav className="flex flex-col space-y-3">
+                  {navLinks.map((link) => (
+                    <Link href={link.path} key={link.name}>
+                      <motion.p 
+                        className={`py-2 px-4 font-medium ${
+                          pathName === link.path 
+                            ? 'text-amber-600 bg-amber-50 rounded-lg' 
+                            : 'text-gray-700'
+                        }`}
+                        whileHover={{ x: 5 }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {link.name}
+                      </motion.p>
                     </Link>
-                  </motion.li>
-                ))}
-              </ul>
+                  ))}
+                </nav>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-    </motion.header>
+    </header>
   );
-}
+};
+
+export default Header;

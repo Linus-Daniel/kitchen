@@ -6,42 +6,46 @@ import CategoryFilter from '@/components/CartegoriesFilter';
 import StoreGrid from '@/components/storeGrid';
 import CartSidebar from '@/components/SideBar';
 import SearchBar from '@/components/searchBar';
-import { CartItem, Product } from '@/types';
+import { CartItem, Option, Product } from '@/types'; // Ensure these types are defined properly
 import { LuShoppingCart } from 'react-icons/lu';
 
-
 const StorePage = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [cartItems, setCartItems] = useState<CartItem[]>([]); // CartItem type
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false); // boolean for cart open state
+  const [selectedCategory, setSelectedCategory] = useState<string>('all'); // string for category
+  const [searchQuery, setSearchQuery] = useState<string>(''); // string for search query
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, selectedOption: Option | null = null) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      const existingItem = prevItems.find((item) => item.id === product.id && item.selectedOption === selectedOption);
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === product.id
+          item.id === product.id && item.selectedOption === selectedOption
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      return [
+        ...prevItems, 
+        { ...product, quantity: 1, selectedOption }
+      ];
     });
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: number, selectedOption: Option | null = null) => {
     setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
+      prevItems.filter((item) => item.id !== productId || item.selectedOption !== selectedOption)
     );
   };
 
-  const updateQuantity = (productId: number, newQuantity: number) => {
+  const updateQuantity = (productId: number, newQuantity: number, selectedOption: Option | null = null) => {
     if (newQuantity < 1) return;
 
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
+        item.id === productId && item.selectedOption === selectedOption
+          ? { ...item, quantity: newQuantity }
+          : item
       )
     );
   };
@@ -72,6 +76,8 @@ const StorePage = () => {
           searchQuery={searchQuery}
           addToCart={addToCart}
           openCart={() => setIsCartOpen(true)}
+          showFavorites
+        
         />
       </div>
 

@@ -1,5 +1,6 @@
 "use client"
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { FiArrowRight } from 'react-icons/fi';
 
 const Hero = () => {
@@ -9,6 +10,8 @@ const Hero = () => {
     { id: 3, name: 'Sushi', top: '70%', left: '15%' },
     { id: 4, name: 'Taco', top: '60%', left: '75%' },
   ];
+
+  const router = useRouter()
 
   return (
     <section className="relative h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-amber-100">
@@ -59,6 +62,7 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
+          onClick={()=>router.push("/store")}
         >
           Order Now <FiArrowRight />
         </motion.button>

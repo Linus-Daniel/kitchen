@@ -19,9 +19,10 @@ const App = () => {
       <Categories />
       <PopularDishes />
       <SpecialOffer />
+      <About />
+      <Contact />
     
 
-      <Footer />
     </main>
   );
 };

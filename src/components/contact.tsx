@@ -1,186 +1,159 @@
-'use client'
-import { motion, useAnimation } from 'framer-motion'
-import { ReactEventHandler, useEffect, useRef, useState } from 'react'
-import axios from "axios"
+"use client"
+import { motion } from 'framer-motion';
+import { FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
 
-export default function Contact() {
-  const [activeField, setActiveField] = useState<string | null>(null)
-  const controls = useAnimation()
-  const ref = useRef<HTMLDivElement>(null)
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-    subject:''
-  })
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          controls.start("visible")
-        }
-      },
-      { threshold: 0.2 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [controls])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target
-    setFormData(prev => ({ ...prev, [id]: value }))
-  }
-
-  const handleSendMessage = async () => {
-    // e.preventDefault()
-    
-    try {
-      console.log(formData)
-      const response = await axios.post("/api/email", formData)
-      console.log("Message sent!", response.data)
-    } catch (error) {
-      console.error("An error occurred:", error)
-    }
-  }
-
+const ContactPage = () => {
   return (
-    <motion.section 
-      ref={ref}
-      className="min-h-screen flex items-center justify-center p-10 bg-gradient-to-br from-stone-900 to-stone-800"
-      initial="hidden"
-      animate={controls}
-      variants={{
-        hidden: { opacity: 0 },
-        visible: { 
-          opacity: 1,
-          transition: { staggerChildren: 0.1 }
-        }
-      }}
-    >
-      <div className="max-w-2xl w-full">
-        <motion.div 
-          className="bg-white/5 backdrop-blur-lg rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
-          variants={{
-            hidden: { y: 50, opacity: 0 },
-            visible: { 
-              y: 0, 
-              opacity: 1,
-              transition: { duration: 0.8, ease: "backOut" }
-            }
-          }}
-        >
-          <div className="p-12">
-            <motion.h2 
-              className="text-4xl font-light mb-12 text-white"
-              variants={{
-                hidden: { x: -30, opacity: 0 },
-                visible: { 
-                  x: 0, 
-                  opacity: 1,
-                  transition: { delay: 0.2, duration: 0.6 }
-                }
-              }}
+    <div>
+      <section className="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-20">
+        <div className="container mx-auto px-4 text-center">
+          <motion.h1 
+            className="text-4xl md:text-6xl font-bold mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            Contact Us
+          </motion.h1>
+          <motion.p 
+            className="text-xl md:text-2xl max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            We'd love to hear from you
+          </motion.p>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              Let's <span className="text-amber-400">collaborate</span>
-            </motion.h2>
-
-            <form className="space-y-8" onSubmit={e => e.preventDefault()}>
-              {['Name', 'Email','Subject'].map((label, i) => (
-                <motion.div
-                  key={label}
-                  className="relative"
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { 
-                      opacity: 1, 
-                      y: 0,
-                      transition: { delay: 0.3 + i * 0.1 }
-                    }
-                  }}
-                >
+              <h2 className="text-3xl font-bold text-amber-900 mb-6">Get in Touch</h2>
+              
+              <form className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
                   <input
-                    id={label.toLowerCase()}
-                    type={label === 'Email' ? 'email' : 'text'}
-                    onChange={handleChange}
-                    value={formData[label.toLowerCase() as 'name' | 'email' | 'subject']}
-                    className="w-full bg-transparent border-0 border-b border-white/20 pb-3 pt-6 text-white focus:border-amber-400 focus:ring-0 peer"
-                    onFocus={() => setActiveField(label.toLowerCase())}
-                    onBlur={() => setActiveField(null)}
+                    type="text"
+                    id="subject"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   />
-                  <label
-                    htmlFor={label.toLowerCase()}
-                    className={`absolute left-0 transition-all duration-300 ${
-                      activeField === label.toLowerCase()
-                        ? 'text-xs top-1 text-amber-400'
-                        : 'top-6 text-white/70 peer-focus:text-xs peer-focus:top-1 peer-focus:text-amber-400'
-                    }`}
-                  >
-                    {label}
-                  </label>
-                </motion.div>
-              ))}
-
-              {/* Message TextArea */}
-              <motion.div
-                className="relative"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { delay: 0.5 }
-                  }
-                }}
-              >
-                <textarea
-                  id="message"
-                  onChange={handleChange}
-                  value={formData.message}
-                  className="w-full bg-transparent border-0 border-b border-white/20 pb-3 pt-6 text-white focus:border-amber-400 focus:ring-0 peer resize-none h-32"
-                  onFocus={() => setActiveField('message')}
-                  onBlur={() => setActiveField(null)}
-                />
-                <label
-                  htmlFor="message"
-                  className={`absolute left-0 transition-all duration-300 ${
-                    activeField === 'message'
-                      ? 'text-xs top-1 text-amber-400'
-                      : 'top-6 text-white/70 peer-focus:text-xs peer-focus:top-1 peer-focus:text-amber-400'
-                  }`}
+                </div>
+                
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <textarea
+                    id="message"
+                    rows={5}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  ></textarea>
+                </div>
+                
+                <motion.button
+                  type="submit"
+                  className="bg-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-700 transition-colors"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Message
-                </label>
-              </motion.div>
-
-              <motion.button
-                type="button"
-                onClick={handleSendMessage}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium relative overflow-hidden group"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { delay: 0.6 }
-                  }
-                }}
-              >
-                <span className="relative z-10">Send Enquiry</span>
-                <motion.span
-                  className="absolute inset-0 bg-gradient-to-r from-amber-600 to-amber-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                  initial={{ x: '-100%' }}
-                  whileHover={{ x: '0%' }}
-                  transition={{ duration: 0.6 }}
-                />
-              </motion.button>
-            </form>
+                  Send Message
+                </motion.button>
+              </form>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-3xl font-bold text-amber-900 mb-6">Contact Information</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-start">
+                  <div className="bg-amber-100 p-3 rounded-full text-amber-600 mr-4">
+                    <FiMapPin size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">Address</h3>
+                    <p className="text-gray-600">123 Food Street, Culinary District<br />New York, NY 10001</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-amber-100 p-3 rounded-full text-amber-600 mr-4">
+                    <FiPhone size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">Phone</h3>
+                    <p className="text-gray-600">+1 (555) 123-4567<br />Mon-Fri: 9am-9pm</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-amber-100 p-3 rounded-full text-amber-600 mr-4">
+                    <FiMail size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">Email</h3>
+                    <p className="text-gray-600">hello@foodexpress.com<br />support@foodexpress.com</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-amber-100 p-3 rounded-full text-amber-600 mr-4">
+                    <FiClock size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">Opening Hours</h3>
+                    <p className="text-gray-600">
+                      Monday-Friday: 9am - 10pm<br />
+                      Saturday-Sunday: 10am - 11pm
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-8">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215209179535!2d-73.987844924014!3d40.74844097138948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1684324567890!5m2!1sen!2sus"
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  className="rounded-lg shadow-md"
+                ></iframe>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
-      </div>
-    </motion.section>
-  )
-}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default ContactPage;

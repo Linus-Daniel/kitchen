@@ -1,4 +1,8 @@
 import { StaticImageData } from "next/image";
+export type Option = {
+  name:string;
+  price:number
+}
 
 export interface Product {
       id: number;
@@ -9,7 +13,13 @@ export interface Product {
       description: string;
       rating:number;
       cookTime:string
+      options:Option[]
+      ingredients: string[]
+      dietary?:string[]
+
+
     }
+    
 
 
     export interface CartItem  {
@@ -22,5 +32,11 @@ export interface Product {
       description: string;
       rating:number;
       cookTime:string
+      options:Option[]
+      ingredients: string[]
+      dietary?:string[]
+      selectedOption:Option |null
     };
     
+
+    export type AddToCart =(product:CartItem)=> void |undefined

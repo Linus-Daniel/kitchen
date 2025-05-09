@@ -1,26 +1,28 @@
-"use client"
 import { motion } from 'framer-motion';
 import ProductCard from './foodCard';
-import { products } from '@/constants/foodData';
-import { Product } from '@/types';
-
+import { useState } from 'react';
+import ProductModal from './ProductModal';
+import { AddToCart, CartItem, Product } from '@/types';
+import productDatas from '@/constants/foodData';
 
 type Props = {
-    selectedCategory:string;
-    searchQuery:string;
-    addToCart:(product:Product) => void
-    openCart:()=>void
+  products:Product[],
+  addToCart:AddToCart
+  showFavorites:boolean
+  selectedCategory: string;
+  searchQuery: string; 
+  openCart:()=>void;
 }
 
-const StoreGrid = ({ selectedCategory, searchQuery, addToCart }:Props) => {
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+const StoreGrid = ({ 
+  addToCart, 
+  showFavorites = true 
+}:Partial<Props>) => {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  if (filteredProducts.length === 0) {
+const products = productDatas
+
+  if (products.length === 0) {
     return (
       <motion.div 
         className="text-center py-12"
@@ -35,20 +37,33 @@ const StoreGrid = ({ selectedCategory, searchQuery, addToCart }:Props) => {
   }
 
   return (
-    <motion.div 
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {filteredProducts.map((product, index) => (
-        <ProductCard 
-          key={product.id}
-          product={product}
-          addToCart={addToCart}
+    <>
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {products.map((product) => (
+          <ProductCard 
+            key={product.id}
+            product={product}
+            onSelect={() => setSelectedProduct(product)}
+            showFavorite={showFavorites}
+          />
+        ))}
+      </motion.div>
+
+      {/* Product modal */}
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          addToCart={addToCart as AddToCart}
         />
-      ))}
-    </motion.div>
+      )}
+    </>
   );
 };
 
