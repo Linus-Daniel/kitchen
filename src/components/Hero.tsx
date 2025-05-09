@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { FiArrowRight } from 'react-icons/fi';
@@ -11,32 +11,34 @@ const Hero = () => {
     { id: 4, name: 'Taco', top: '60%', left: '75%' },
   ];
 
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <section className="relative h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-amber-100">
-      {/* Animated food items floating in background */}
-      {foodItems.map((item) => (
-        <motion.div
-          key={item.id}
-          className="absolute w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center"
-          style={{ top: item.top, left: item.left }}
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 5, -5, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <span className="text-xl font-bold">{item.name}</span>
-        </motion.div>
-      ))}
+      {/* Animated food items floating in background (behind content) */}
+      <div className="absolute inset-0 z-0">
+        {foodItems.map((item) => (
+          <motion.div
+            key={item.id}
+            className="absolute w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center"
+            style={{ top: item.top, left: item.left }}
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 5, -5, 0],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <span className="text-xl font-bold">{item.name}</span>
+          </motion.div>
+        ))}
+      </div>
 
-      {/* Main content */}
-      <div className="container mx-auto h-full flex flex-col justify-center items-center text-center px-4">
+      {/* Main content (in front) */}
+      <div className="relative z-10 container mx-auto h-full flex flex-col justify-center items-center text-center px-4">
         <motion.h1 
           className="text-5xl md:text-7xl font-bold text-amber-900 mb-6"
           initial={{ opacity: 0, y: 50 }}
@@ -62,7 +64,7 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          onClick={()=>router.push("/store")}
+          onClick={() => router.push("/store")}
         >
           Order Now <FiArrowRight />
         </motion.button>

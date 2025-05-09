@@ -4,7 +4,7 @@ import { FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
 
 const ContactPage = () => {
   return (
-    <div>
+    <div id='contact' >
       <section className="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <motion.h1 

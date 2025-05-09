@@ -7,12 +7,6 @@ import { FiCreditCard, FiPlus, FiEdit, FiTrash2, FiUser, FiClock, FiMapPin } fro
 const PaymentPage = () => {
   const { user } = useAuth();
   const router = useRouter();
-
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
-
   const paymentMethods = [
     {
       id: 1,
@@ -33,44 +27,7 @@ const PaymentPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <div className="md:col-span-1">
-          <motion.div 
-            className="bg-white rounded-xl shadow-sm p-6 sticky top-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mr-4">
-                <FiCreditCard size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold">Payment Methods</h3>
-                <p className="text-sm text-gray-500">{paymentMethods.length} cards</p>
-              </div>
-            </div>
-            
-            <nav className="space-y-2">
-              <a href="/account" className="flex items-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <FiUser className="mr-3" />
-                Dashboard
-              </a>
-              <a href="/account/orders" className="flex items-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <FiClock className="mr-3" />
-                My Orders
-              </a>
-              <a href="/account/addresses" className="flex items-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <FiMapPin className="mr-3" />
-                Addresses
-              </a>
-              <a href="#" className="flex items-center p-2 text-amber-600 bg-amber-50 rounded-lg font-medium">
-                <FiCreditCard className="mr-3" />
-                Payment Methods
-              </a>
-            </nav>
-          </motion.div>
-        </div>
-        
+  
         {/* Main content */}
         <div className="md:col-span-3">
           <motion.div 

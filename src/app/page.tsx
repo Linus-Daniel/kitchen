@@ -14,7 +14,6 @@ import SpecialOffer from "@/components/SpecialOffer";
 const App = () => {
   return (
     <main className="relative">
-      <Header />
       <Hero />
       <Categories />
       <PopularDishes />

@@ -6,6 +6,7 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/cartContext';
+import { useAuth } from '@/context/authContext';
 
 type Props = {
   cartCount:number
@@ -16,6 +17,8 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const { cartCount } = useCart();
+  const {user} = useAuth()
+
 
   const pathName = usePathname()
 
@@ -33,8 +36,8 @@ const Header = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Menu', path: '/store' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
+    { name: 'About', path: '#about' },
+    { name: 'Contact', path: '/#contact' },
   ];
 
   return (
@@ -89,6 +92,19 @@ const Header = () => {
             </motion.form>
 
             {/* Icons */}
+
+            <section>
+
+              {
+                user?(<div className='flex items-center gap-5'>
+                  <Link href={"/login"} className='bg-amber-400 px-5 py-1 rounded-2xl text-sm'>
+                  Login
+                  </Link>
+                  <Link href={"/register"} className='text-sm px-5 py-1 border-[2px] rounded-full border-amber-400' >
+                  Register
+                  </Link>
+                </div>):(
+
             <div className="flex items-center space-x-4">
               <Link href="/account">
                 <motion.p 
@@ -133,6 +149,10 @@ const Header = () => {
                 {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
               </button>
             </div>
+             ) }
+
+            </section>
+
           </div>
         </div>
 

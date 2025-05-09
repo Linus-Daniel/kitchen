@@ -60,11 +60,11 @@ const ProductModal = ({ product, isOpen, onClose, addToCart }:Props) => {
               
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Product image */}
-                <div className="bg-amber-50 h-64 md:h-full flex items-center justify-center p-8">
+                <div className="bg-amber-50 h-full md:h-full flex items-center justify-center">
                   <motion.img 
                     src={product.image as string} 
                     alt={product.name}
-                    className="max-h-full object-contain"
+                    className="h-full object-cover w-full"
                     whileHover={{ scale: 1.05 }}
                   />
                 </div>

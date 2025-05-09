@@ -30,11 +30,11 @@ const ProductCard = ({ product, onSelect, showFavorite = true }:Props) => {
       )}
       
       {/* Product image */}
-      <div className="h-48 bg-amber-50 flex items-center justify-center p-4 relative">
+      <div className="h-48 bg-amber-50 flex items-center justify-center relative">
         <motion.img 
           src={product.image as string} 
           alt={product.name}
-          className="h-full object-contain"
+          className="h-full object-cover w-full"
           whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.3 }}
         />
