@@ -32,13 +32,13 @@ const StorePage = () => {
     });
   };
 
-  const removeFromCart = (productId: number, selectedOption: Option | null = null) => {
+  const removeFromCart = (productId:string, selectedOption: Option | null = null) => {
     setCartItems((prevItems) =>
       prevItems.filter((item) => item.id !== productId || item.selectedOption !== selectedOption)
     );
   };
 
-  const updateQuantity = (productId: number, newQuantity: number, selectedOption: Option | null = null) => {
+  const updateQuantity = (productId:string, newQuantity: number, selectedOption: Option | null = null) => {
     if (newQuantity < 1) return;
 
     setCartItems((prevItems) =>

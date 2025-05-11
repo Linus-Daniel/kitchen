@@ -1,18 +1,48 @@
 'use client';
 
-import { Product } from '@/types';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from './authContext';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { StaticImageData } from "next/image";
 
-// Define the Cart Item type
+// Define types first
+export type Option = {
+  name: string;
+  price: number;
+  choice?: string; // Added based on usage in selectedOption
+};
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  image: string | StaticImageData;
+  description: string;
+  rating: number;
+  cookTime: string;
+  options: Option[];
+  ingredients: string[];
+  dietary?: string[];
+}
+
 export interface CartItem extends Product {
-  selectedOptions?: {
-    name: string;
-    choice: string;
-  }[];
   quantity: number;
-  price: number; // Ensure price is included as it's required by backend
+  selectedOption?: { name: string; choice: string }[]; // Corrected based on usage
+}
+
+export interface Order {
+  _id: string;
+  user: {
+    name: string;
+    email: string;
+  };
+  orderItems: CartItem[]; // Changed from empty array to CartItem[]
+  totalPrice: number;
+  status: string;
+  createdAt: string;
+  isPaid: boolean;
+  isDelivered: boolean;
 }
 
 // Define the context type
@@ -22,7 +52,7 @@ interface CartContextType {
   totalPrice: number;
   loading: boolean;
   error: string | null;
-  addToCart: (product: Product, quantity: number, selectedOptions?: { name: string; choice: string }[]) => Promise<void>;
+  addToCart: (product: Product, quantity: number, selectedOption?: { name: string; choice: string }[]) => Promise<void>;
   removeFromCart: (productId: string, selectedOptionName?: string) => Promise<void>;
   updateQuantity: (productId: string, newQuantity: number, selectedOptionName?: string) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -75,9 +105,11 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }, [cartItems, user]);
 
   // Handle API errors
-  const handleError = (error: any) => {
+  const handleError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
       setError(error.response?.data?.message || error.message);
+    } else if (error instanceof Error) {
+      setError(error.message);
     } else {
       setError('An unexpected error occurred');
     }
@@ -91,22 +123,25 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/cart',
-        {
-          headers:{
-            Authorization:`Bearer ${localStorage.getItem("token")}`
-          },
-          withCredentials:true
-        }
-      );
+      const response = await api.get('/cart', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        withCredentials: true
+      });
       const backendCart = response.data.data.items || [];
       
       // Merge local cart with backend cart if needed
-      const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const localCart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
       if (localCart.length > 0) {
         // Merge logic could be more sophisticated based on your needs
         const mergedCart = [...backendCart, ...localCart];
-        await api.put('/cart', { items: mergedCart });
+        await api.put('/cart', { items: mergedCart }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          withCredentials: true
+        });
         localStorage.removeItem('cart');
       }
 
@@ -119,14 +154,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   // Add item to cart
-  const addToCart = async (product: Product, quantity: number = 1, selectedOptions?: { name: string; choice: string }[]) => {
+  const addToCart = async (product: Product, quantity: number = 1, selectedOption?: { name: string; choice: string }[]) => {
     setLoading(true);
     setError(null);
     
     const cartItem: CartItem = {
       ...product,
       quantity,
-      selectedOptions,
+      selectedOption,
       price: product.price 
     };
 
@@ -136,28 +171,27 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         await api.post('/cart', {
           productId: product.id,
           quantity,
-          selectedOptions,
+          selectedOption,
           price: product.price
-        },
-      {
-        headers:{
-          Authorization:`Bearer ${localStorage.getItem("token")}`
-        },
-        withCredentials:true
-      });
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          withCredentials: true
+        });
         await syncCart();
       } else {
         // Guest user - local storage only
         setCartItems(prevItems => {
           const existingItem = prevItems.find(
             item => item.id === product.id && 
-                   JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)
+                   JSON.stringify(item.selectedOption) === JSON.stringify(selectedOption)
           );
 
           if (existingItem) {
             return prevItems.map(item =>
               item.id === product.id && 
-              JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)
+              JSON.stringify(item.selectedOption) === JSON.stringify(selectedOption)
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
             );
@@ -181,9 +215,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       if (user) {
         // Authenticated user - sync with backend
         await api.delete(`/cart/${productId}`, {
-          data: { optionName: selectedOptionName }
-        },
-      );
+          data: { optionName: selectedOptionName },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          withCredentials: true
+        });
         await syncCart();
       } else {
         // Guest user - local storage only
@@ -191,7 +228,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           prevItems.filter(
             item => !(item.id === productId && 
                      (!selectedOptionName || 
-                      item.selectedOptions?.some(opt => opt.name === selectedOptionName)))
+                      item.selectedOption?.some(opt => opt.name === selectedOptionName)))
           )
         );
       }
@@ -214,15 +251,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         await api.put(`/cart/${productId}`, {
           quantity: newQuantity,
           optionName: selectedOptionName
-        },
-      
-        {
-          headers:{
-            Authorization:`Bearer ${localStorage.getItem("token")}`
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
           },
-          withCredentials:true
-        }
-      );
+          withCredentials: true
+        });
         await syncCart();
       } else {
         // Guest user - local storage only
@@ -230,7 +264,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           prevItems.map(item =>
             item.id === productId && 
             (!selectedOptionName || 
-             item.selectedOptions?.some(opt => opt.name === selectedOptionName))
+             item.selectedOption?.some(opt => opt.name === selectedOptionName))
               ? { ...item, quantity: newQuantity }
               : item
           )
@@ -250,7 +284,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       if (user) {
         // Authenticated user - sync with backend
-        await api.delete('/cart');
+        await api.delete('/cart', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          withCredentials: true
+        });
       }
       // Clear for both authenticated and guest users
       setCartItems([]);

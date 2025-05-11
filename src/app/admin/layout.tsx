@@ -1,5 +1,4 @@
 "use client";
-
 import { AdminSidebar } from "@/components/admin/sideBar";
 import { AdminNavbar } from "@/components/admin/navBar";
 import { motion } from "framer-motion";

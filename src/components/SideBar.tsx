@@ -6,8 +6,8 @@ import { FiX, FiMinus, FiPlus } from 'react-icons/fi';
 type Props = {
     isOpen: boolean;
     onClose: () => void;
-    updateQuantity: (id: number, newQuantity: number) => void;
-    removeFromCart: (id: number) => void;
+    updateQuantity: (id: string, newQuantity: number) => void;
+    removeFromCart: (id: string) => void;
     cartItems:CartItem[]
 
 

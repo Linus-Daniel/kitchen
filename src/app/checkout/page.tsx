@@ -1,19 +1,22 @@
-"use client"
+"use client";
 import { useState } from 'react';
 import { useCart } from '@/context/cartContext';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiCreditCard, FiHome, FiMapPin } from 'react-icons/fi';
 import Link from 'next/link';
 
+type DeliveryOption = 'delivery' | 'pickup';
+type PaymentMethod = 'card' | 'paypal' | 'cash';
+
 const CheckoutPage = () => {
   const { cartItems, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
-  const [deliveryOption, setDeliveryOption] = useState('delivery');
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('delivery');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   const subtotal = cartItems.reduce(
-    (sum:any, item) => sum + item.price * item.quantity,
+    (sum: number, item) => sum + item.price * item.quantity,
     0
   );
   const deliveryFee = deliveryOption === 'delivery' ? 2.99 : 0;
@@ -48,7 +51,7 @@ const CheckoutPage = () => {
             Thank you for your order. Your food is being prepared and will be delivered soon.
           </p>
           
-          <Link href="/store">
+          <Link href="/store" legacyBehavior>
             <motion.a
               className="inline-block bg-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-700 transition-colors"
               whileHover={{ scale: 1.02 }}
@@ -69,7 +72,7 @@ const CheckoutPage = () => {
           <h1 className="text-3xl font-bold mb-4">Your Cart is Empty</h1>
           <p className="text-gray-600 mb-8">Looks like you haven't added anything to your cart yet.</p>
           
-          <Link href="/store">
+          <Link href="/store" legacyBehavior>
             <motion.a
               className="inline-block bg-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-700 transition-colors"
               whileHover={{ scale: 1.02 }}
@@ -86,7 +89,7 @@ const CheckoutPage = () => {
   return (
     <div>
       <div className="container mx-auto px-4 py-8">
-        <Link href="/store">
+        <Link href="/store" legacyBehavior>
           <motion.a 
             className="flex items-center text-amber-600 hover:text-amber-700 mb-6"
             whileHover={{ x: -3 }}
@@ -272,14 +275,14 @@ const CheckoutPage = () => {
               
               <div className="space-y-4 mb-6">
                 {cartItems.map((item) => (
-                  <div key={`${item.id}-${item.selectedOption?.name || 'default'}`} className="flex justify-between">
+                  <div key={`${item.id}-${item.selectedOption?.map(opt => opt.name).join('-') || 'default'}`} className="flex justify-between">
                     <div>
                       <div className="font-medium">
                         {item.quantity} × {item.name}
                       </div>
-                      {item.selectedOption && (
+                      {item.selectedOption && item.selectedOption.length > 0 && (
                         <div className="text-sm text-gray-500">
-                          {item.selectedOption.name}
+                          {item.selectedOption.map(opt => `${opt.name}: ${opt.choice}`).join(', ')}
                         </div>
                       )}
                     </div>
