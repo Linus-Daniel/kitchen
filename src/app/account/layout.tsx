@@ -9,10 +9,13 @@ type Props = {
 
 const Layout = ({ children }:Props) => {
   return (
-    <div className="flex p-3 min-h-screen">
+    <main>
+
       <AccountSidebar />
+    <div className="flex p-3 min-h-screen">
       <main>{children}</main>
     </div>
+    </main>
   );
 };
 

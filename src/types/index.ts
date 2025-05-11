@@ -5,7 +5,7 @@ export type Option = {
 }
 
 export interface Product {
-      id: number;
+      id: string;
       name: string;
       price:number;
       category: string;
@@ -40,3 +40,19 @@ export interface Product {
     
 
     export type AddToCart =(product:CartItem)=> void |undefined
+
+
+  export   interface Order {
+      _id:string;
+      user:{
+          name:string;
+          email:string;
+          
+      };
+      orderItems:[];
+      totalPrice:number;
+      status:string;
+      createdAt:string;
+      isPaid:boolean;
+      isDelivered:boolean
+  }

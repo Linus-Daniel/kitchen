@@ -1,8 +1,15 @@
 "use client"
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { FiFacebook, FiTwitter, FiInstagram } from 'react-icons/fi';
 
 const Footer = () => {
+
+
+  const pathName = usePathname()
+
+
+  if (pathName.startsWith('/admin')) return null;
   return (
     <footer className="bg-amber-900 text-white py-12">
       <div className="container mx-auto px-4">

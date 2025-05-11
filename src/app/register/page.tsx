@@ -11,6 +11,7 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
+  phone:string
 }
 
 const RegisterPage = () => {
@@ -19,6 +20,7 @@ const RegisterPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    phone:""
   });
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,6 +51,7 @@ const RegisterPage = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        phone:formData.phone
       });
       router.push('/account');
     } catch (err: any) {
@@ -124,6 +127,29 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 placeholder="your@email.com"
+              />
+            </div>
+          </div>
+
+            {/* Phone Field */}
+            <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiMail className="text-gray-400" />
+              </div>
+              <input
+                id="phone"
+                name="phone"
+                type="text"
+                autoComplete="phone"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                placeholder="+2349012384728"
               />
             </div>
           </div>

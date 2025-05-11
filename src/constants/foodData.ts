@@ -2,7 +2,7 @@ import { Product } from "@/types";
 
 export const productDatas: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Margherita Pizza",
     description: "Classic pizza with tomato sauce, fresh mozzarella, and basil leaves. Our signature pizza made with love and traditional Italian recipe.",
     price: 12.99,
@@ -20,7 +20,7 @@ export const productDatas: Product[] = [
     ingredients: ["Pizza dough", "Tomato sauce", "Fresh mozzarella", "Basil", "Olive oil"]
   },
   {
-    id: 2,
+    id: "2",
     name: "Pepperoni Pizza",
     description: "Traditional pizza with spicy pepperoni and mozzarella cheese. Perfect for meat lovers with just the right amount of spice.",
     price: 14.99,
@@ -37,7 +37,7 @@ export const productDatas: Product[] = [
     ingredients: ["Pizza dough", "Tomato sauce", "Mozzarella", "Pepperoni", "Spices"]
   },
   {
-    id: 3,
+    id: "3",
     name: "Classic Cheeseburger",
     description: "Juicy beef patty with cheese, lettuce, tomato, pickles, and our special sauce on a toasted sesame bun.",
     price: 8.99,
@@ -53,7 +53,7 @@ export const productDatas: Product[] = [
     ingredients: ["Beef patty", "Cheddar cheese", "Lettuce", "Tomato", "Pickles", "Sesame bun", "Special sauce"]
   },
   {
-    id: 4,
+    id: "4",
     name: "California Roll",
     description: "Fresh sushi roll with crab meat, avocado, and cucumber wrapped in seaweed and rice.",
     price: 10.99,
@@ -66,7 +66,7 @@ export const productDatas: Product[] = [
     ingredients: ["Sushi rice", "Seaweed", "Crab meat", "Avocado", "Cucumber"]
   },
   {
-    id: 5,
+    id: "5",
     name: "Spaghetti Carbonara",
     description: "Classic Italian pasta dish made with eggs, Parmesan, pancetta, and pepper.",
     price: 11.99,
@@ -78,7 +78,7 @@ export const productDatas: Product[] = [
     ingredients: ["Spaghetti", "Eggs", "Parmesan cheese", "Pancetta", "Black pepper"]
   },
   {
-    id: 6,
+    id: "6",
     name: "Chocolate Lava Cake",
     description: "Warm chocolate cake with a gooey molten center, served with a scoop of vanilla ice cream.",
     price: 6.99,
@@ -91,7 +91,7 @@ export const productDatas: Product[] = [
     ingredients: ["Dark chocolate", "Butter", "Sugar", "Eggs", "Flour"]
   },
   {
-    id: 7,
+    id: "7",
     name: "Iced Caramel Latte",
     description: "Chilled espresso with creamy milk and rich caramel syrup over ice.",
     price: 4.99,
@@ -107,7 +107,7 @@ export const productDatas: Product[] = [
     ingredients: ["Espresso", "Milk", "Caramel syrup", "Ice"]
   },
   {
-    id: 8,
+    id: "8",
     name: "Veggie Burger",
     description: "Delicious plant-based patty with lettuce, tomato, and vegan mayo on a whole grain bun.",
     price: 9.99,
