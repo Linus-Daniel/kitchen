@@ -1,10 +1,10 @@
 'use client';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { apiClient, RegisterData } from '@/lib/api';
 
 interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   phone: string;
@@ -15,24 +15,18 @@ interface User {
     state?: string;
     zipCode?: string;
   };
-  role?: 'user' | 'admin';
+  role: 'user' | 'admin' | 'vendor';
+  businessName?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  login: (email: string, password: string, isVendor?: boolean) => Promise<void>;
+  register: (userData: RegisterData, isVendor?: boolean) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
-}
-
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,11 +34,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 interface AuthProviderProps {
   children: ReactNode;
 }
-
-// Create axios instance with base URL
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
-});
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -58,9 +47,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const response = await api.get('/auth/me');
-          setUser(response.data.data);
+          const response = await apiClient.getProfile();
+          setUser(response.data);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
@@ -75,57 +63,79 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Handle API errors
   const handleError = (error: any) => {
-    if (axios.isAxiosError(error)) {
-      setError(error.response?.data?.message || error.message);
-    } else {
-      setError('An unexpected error occurred');
-    }
-    throw error;
+    setError(error.message || 'An unexpected error occurred');
+    console.error('Auth error:', error);
   };
 
   // Login function
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, isVendor: boolean = false) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token } = response.data;
+      const response = isVendor 
+        ? await apiClient.vendorLogin({ email, password })
+        : await apiClient.login({ email, password });
       
-      // Store token and set auth header
+      const token = response.data?.token;
+      
+      if (!token) {
+        throw new Error('No token received');
+      }
+      
+      // Store token
       localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       // Fetch user data
-      const userResponse = await api.get('/auth/me');
-      setUser(userResponse.data.data);
+      const userResponse = await apiClient.getProfile();
+      setUser(userResponse.data);
       
-      router.push('/');
+      // Redirect based on role
+      if (userResponse.data.role === 'vendor') {
+        router.push('/vendor');
+      } else if (userResponse.data.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       handleError(error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   // Register function
-  const register = async (userData: RegisterData) => {
+  const register = async (userData: RegisterData, isVendor: boolean = false) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post('/auth/register', userData);
-      const { token } = response.data;
+      const response = isVendor 
+        ? await apiClient.vendorRegister(userData as any)
+        : await apiClient.register(userData);
       
-      // Store token and set auth header
+      const token = response.data?.token;
+      
+      if (!token) {
+        throw new Error('No token received');
+      }
+      
+      // Store token
       localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       // Fetch user data
-      const userResponse = await api.get('/auth/me');
-      setUser(userResponse.data.data);
+      const userResponse = await apiClient.getProfile();
+      setUser(userResponse.data);
       
-      router.push('/');
+      // Redirect based on role
+      if (userResponse.data.role === 'vendor') {
+        router.push('/vendor');
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       handleError(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -134,7 +144,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Logout function
   const logout = () => {
     localStorage.removeItem('token');
-    delete api.defaults.headers.common['Authorization'];
     setUser(null);
     router.push('/login');
   };
@@ -144,10 +153,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.put('/auth/me', userData);
-      setUser(response.data.data);
+      const response = await apiClient.updateProfile(userData);
+      setUser(response.data);
     } catch (error) {
       handleError(error);
+      throw error;
     } finally {
       setLoading(false);
     }

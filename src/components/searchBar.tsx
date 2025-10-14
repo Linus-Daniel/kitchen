@@ -4,10 +4,12 @@ import { FiSearch } from 'react-icons/fi';
 
 type SearchBarPropsType =  {
     searchQuery:string
-    setSearchQuery: (e:any) => any
+    setSearchQuery:(query:string)=>void
+    placeholder?:string;
+    className?:string;
 }
 
-const SearchBar = ({ searchQuery, setSearchQuery }:SearchBarPropsType) => {
+const SearchBar = ({ searchQuery, setSearchQuery,placeholder,className }:SearchBarPropsType) => {
   return (
     <motion.div 
       className="relative"
@@ -17,10 +19,10 @@ const SearchBar = ({ searchQuery, setSearchQuery }:SearchBarPropsType) => {
     >
       <input
         type="text"
-        placeholder="Search dishes..."
+        placeholder={placeholder}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-10 pr-4 py-2 rounded-full border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+        className={`pl-10 ${className} pr-4 py-2 rounded-full border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent`}
       />
       <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500" />
     </motion.div>

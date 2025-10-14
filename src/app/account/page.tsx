@@ -155,47 +155,6 @@ const AccountDashboard = () => {
             </div>
           </motion.div>
         </div>
-
-        {/* Sidebar - hidden on mobile, shown on desktop */}
-        <div className="hidden lg:block">
-          <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mr-4">
-                <FiUser size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold">{user?.name}</h3>
-                <p className="text-sm text-gray-500">{user?.email}</p>
-              </div>
-            </div>
-            
-            <nav className="space-y-2">
-              <a href="/account" className="flex items-center p-3 rounded-lg font-medium text-amber-600 bg-amber-50">
-                <FiUser className="mr-3" />
-                Dashboard
-              </a>
-              <a href="/account/orders" className="flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50">
-                <FiClock className="mr-3" />
-                My Orders
-              </a>
-              <a href="/account/addresses" className="flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50">
-                <FiMapPin className="mr-3" />
-                Addresses
-              </a>
-              <a href="/account/payment" className="flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50">
-                <FiCreditCard className="mr-3" />
-                Payment Methods
-              </a>
-              <button
-                onClick={logout}
-                className="w-full flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
-              >
-                <FiLogOut className="mr-3" />
-                Logout
-              </button>
-            </nav>
-          </div>
-        </div>
       </div>
     </div>
   );

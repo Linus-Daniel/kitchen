@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import { FormEvent, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/context/cartContext';
 import { useAuth } from '@/context/authContext';
+import { NotificationPanel } from './NotificationPanel';
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
@@ -24,7 +25,6 @@ const Header = () => {
   const { user } = useAuth();
 
   if (pathName.startsWith('/admin')) return null;
-
 
   const handleSearch = useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -44,12 +44,12 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link href="/" passHref legacyBehavior>
             <motion.p 
-              className="text-2xl font-bold text-amber-600 flex items-center"
+              className="text-xl sm:text-2xl font-bold text-amber-600 flex items-center"
               whileHover={{ scale: 1.05 }}
             >
               <span className="mr-1">🍔</span>
@@ -57,82 +57,79 @@ const Header = () => {
             </motion.p>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => (
-              <Link href={link.path} key={link.name} passHref legacyBehavior>
-                <motion.a
-                  className={`font-medium hover:text-amber-600 transition-colors ${
-                    pathName === link.path ? 'text-amber-600' : 'text-gray-700'
-                  }`}
-                  whileHover={{ y: -2 }}
-                >
-                  {link.name}
-                </motion.a>
-              </Link>
-            ))}
-          </nav>
+          {/* Mobile menu toggle */}
+          <button 
+            className="md:hidden p-2 text-gray-700"
+            onClick={toggleMobileMenu}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          >
+            {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
 
-          {/* Right side icons */}
-          <div className="flex items-center space-x-4">
-            {/* Search bar (desktop) */}
+          {/* Desktop nav + search + user area */}
+          <div className="hidden md:flex items-center space-x-6">
+            <nav className="flex space-x-6">
+              {NAV_LINKS.map((link) => (
+                <Link href={link.path} key={link.name} passHref legacyBehavior>
+                  <motion.a
+                    className={`font-medium hover:text-amber-600 transition-colors ${
+                      pathName === link.path ? 'text-amber-600' : 'text-gray-700'
+                    }`}
+                    whileHover={{ y: -2 }}
+                  >
+                    {link.name}
+                  </motion.a>
+                </Link>
+              ))}
+            </nav>
+
             <motion.form 
               onSubmit={handleSearch}
-              className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2"
+              className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-1"
               whileHover={{ scale: 1.05 }}
             >
               <input
                 type="text"
-                placeholder="Search dishes..."
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent outline-none w-40"
+                className="bg-transparent outline-none w-32 lg:w-48"
               />
               <button type="submit" aria-label="Search">
                 <FiSearch className="text-gray-500" />
               </button>
             </motion.form>
 
-            {/* Conditional rendering based on auth state */}
-            {!user ? (
-              <div className="flex items-center gap-4">
-                <Link href="/login" className='bg-amber-400 px-5 py-1 rounded-2xl text-sm hover:bg-amber-500 transition-colors'>
-                  Login
-                </Link>
-                <Link href="/register" className='text-sm px-5 py-1 border-2 rounded-full border-amber-400 hover:border-amber-500 transition-colors'>
-                  Register
-                </Link>
-              </div>
-            ) : (
+            {user ? (
               <div className="flex items-center space-x-4">
+                {/* Notifications */}
+                <NotificationPanel />
+
                 <Link href="/account" passHref legacyBehavior>
                   <motion.a 
                     className="p-2 text-gray-700 hover:text-amber-600"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    aria-label="Account"
                   >
                     <FiUser size={20} />
                   </motion.a>
                 </Link>
-                
+
                 <Link href="/favorites" passHref legacyBehavior>
                   <motion.a 
                     className="p-2 text-gray-700 hover:text-amber-600"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    aria-label="Favorites"
                   >
                     <FiHeart size={20} />
                   </motion.a>
                 </Link>
-                
+
                 <Link href="/cart" passHref legacyBehavior>
                   <motion.a 
                     className="p-2 text-gray-700 hover:text-amber-600 relative"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    aria-label="Cart"
                   >
                     <FiShoppingCart size={20} />
                     {cartCount > 0 && (
@@ -142,21 +139,21 @@ const Header = () => {
                     )}
                   </motion.a>
                 </Link>
-
-                {/* Mobile menu button */}
-                <button 
-                  className="md:hidden p-2 text-gray-700"
-                  onClick={toggleMobileMenu}
-                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-                >
-                  {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-                </button>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <Link href="/login" className="bg-amber-400 px-4 py-1 rounded-2xl text-sm hover:bg-amber-500 transition-colors">
+                  Login
+                </Link>
+                <Link href="/register" className="text-sm px-4 py-1 border-2 rounded-full border-amber-400 hover:border-amber-500 transition-colors">
+                  Register
+                </Link>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -201,6 +198,17 @@ const Header = () => {
                     </Link>
                   ))}
                 </nav>
+
+                {!user && (
+                  <div className="flex flex-col gap-3 px-4">
+                    <Link href="/login" className="bg-amber-400 text-center py-2 rounded-xl text-sm hover:bg-amber-500 transition-colors">
+                      Login
+                    </Link>
+                    <Link href="/register" className="text-center text-sm py-2 border-2 rounded-full border-amber-400 hover:border-amber-500 transition-colors">
+                      Register
+                    </Link>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}

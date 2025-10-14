@@ -3,6 +3,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -168,71 +170,158 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Modern Food App Color Palette */
+  --background: oklch(0.99 0.002 106.423);
+  --foreground: oklch(0.09 0.005 286.655);
+  
+  /* Primary - Vibrant Orange (Food/Warmth) */
+  --primary: oklch(0.65 0.18 45.2);
+  --primary-foreground: oklch(0.98 0.002 106.423);
+  --primary-50: oklch(0.97 0.01 45.2);
+  --primary-100: oklch(0.93 0.04 45.2);
+  --primary-200: oklch(0.86 0.08 45.2);
+  --primary-300: oklch(0.77 0.12 45.2);
+  --primary-400: oklch(0.71 0.15 45.2);
+  --primary-500: oklch(0.65 0.18 45.2);
+  --primary-600: oklch(0.58 0.16 45.2);
+  --primary-700: oklch(0.48 0.13 45.2);
+  --primary-800: oklch(0.39 0.11 45.2);
+  --primary-900: oklch(0.32 0.09 45.2);
+
+  /* Secondary - Deep Teal (Trust/Professional) */
+  --secondary: oklch(0.55 0.08 192.17);
+  --secondary-foreground: oklch(0.98 0.002 106.423);
+  --secondary-50: oklch(0.96 0.01 192.17);
+  --secondary-100: oklch(0.91 0.03 192.17);
+  --secondary-200: oklch(0.82 0.05 192.17);
+  --secondary-300: oklch(0.71 0.06 192.17);
+  --secondary-400: oklch(0.63 0.07 192.17);
+  --secondary-500: oklch(0.55 0.08 192.17);
+  --secondary-600: oklch(0.47 0.07 192.17);
+  --secondary-700: oklch(0.39 0.06 192.17);
+  --secondary-800: oklch(0.32 0.05 192.17);
+  --secondary-900: oklch(0.27 0.04 192.17);
+
+  /* Accent - Fresh Green (Success/Fresh) */
+  --accent: oklch(0.62 0.15 142.5);
+  --accent-foreground: oklch(0.98 0.002 106.423);
+  --accent-50: oklch(0.96 0.02 142.5);
+  --accent-100: oklch(0.91 0.05 142.5);
+  --accent-200: oklch(0.83 0.09 142.5);
+  --accent-300: oklch(0.73 0.12 142.5);
+  --accent-400: oklch(0.67 0.14 142.5);
+  --accent-500: oklch(0.62 0.15 142.5);
+  --accent-600: oklch(0.55 0.13 142.5);
+  --accent-700: oklch(0.45 0.11 142.5);
+  --accent-800: oklch(0.37 0.09 142.5);
+  --accent-900: oklch(0.31 0.07 142.5);
+
+  /* Neutral Colors */
+  --card: oklch(0.99 0.002 106.423);
+  --card-foreground: oklch(0.09 0.005 286.655);
+  --popover: oklch(0.99 0.002 106.423);
+  --popover-foreground: oklch(0.09 0.005 286.655);
+  --muted: oklch(0.95 0.002 106.423);
+  --muted-foreground: oklch(0.45 0.004 286.655);
+  --border: oklch(0.89 0.002 106.423);
+  --input: oklch(0.89 0.002 106.423);
+  --ring: oklch(0.65 0.18 45.2);
+
+  /* Status Colors */
+  --destructive: oklch(0.65 0.2 25.331);
+  --destructive-foreground: oklch(0.98 0.002 106.423);
+  --warning: oklch(0.75 0.15 70.67);
+  --warning-foreground: oklch(0.09 0.005 286.655);
+  --success: oklch(0.62 0.15 142.5);
+  --success-foreground: oklch(0.98 0.002 106.423);
+  --info: oklch(0.55 0.08 192.17);
+  --info-foreground: oklch(0.98 0.002 106.423);
+
+  /* Chart Colors */
+  --chart-1: oklch(0.65 0.18 45.2);
+  --chart-2: oklch(0.55 0.08 192.17);
+  --chart-3: oklch(0.62 0.15 142.5);
+  --chart-4: oklch(0.65 0.2 25.331);
+  --chart-5: oklch(0.75 0.15 70.67);
+
+  /* Sidebar */
+  --sidebar: oklch(0.97 0.002 106.423);
+  --sidebar-foreground: oklch(0.09 0.005 286.655);
+  --sidebar-primary: oklch(0.65 0.18 45.2);
+  --sidebar-primary-foreground: oklch(0.98 0.002 106.423);
+  --sidebar-accent: oklch(0.95 0.002 106.423);
+  --sidebar-accent-foreground: oklch(0.09 0.005 286.655);
+  --sidebar-border: oklch(0.89 0.002 106.423);
+  --sidebar-ring: oklch(0.65 0.18 45.2);
+
+  /* Food App Specific Colors */
+  --food-orange: oklch(0.65 0.18 45.2);
+  --food-red: oklch(0.65 0.2 25.331);
+  --food-green: oklch(0.62 0.15 142.5);
+  --food-yellow: oklch(0.85 0.12 85.87);
+  --food-brown: oklch(0.45 0.08 54.7);
+  --food-cream: oklch(0.94 0.02 85.87);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Mode Color Palette */
+  --background: oklch(0.08 0.004 286.655);
+  --foreground: oklch(0.95 0.002 106.423);
+  
+  /* Primary - Brighter Orange for dark mode */
+  --primary: oklch(0.7 0.2 45.2);
+  --primary-foreground: oklch(0.08 0.004 286.655);
+  
+  /* Secondary - Lighter Teal for dark mode */
+  --secondary: oklch(0.6 0.1 192.17);
+  --secondary-foreground: oklch(0.08 0.004 286.655);
+  
+  /* Accent - Brighter Green for dark mode */
+  --accent: oklch(0.67 0.17 142.5);
+  --accent-foreground: oklch(0.08 0.004 286.655);
+  
+  /* Cards and Surfaces */
+  --card: oklch(0.12 0.004 286.655);
+  --card-foreground: oklch(0.95 0.002 106.423);
+  --popover: oklch(0.12 0.004 286.655);
+  --popover-foreground: oklch(0.95 0.002 106.423);
+  
+  /* Muted Colors */
+  --muted: oklch(0.15 0.004 286.655);
+  --muted-foreground: oklch(0.6 0.002 106.423);
+  
+  /* Interactive Elements */
+  --border: oklch(0.2 0.004 286.655);
+  --input: oklch(0.15 0.004 286.655);
+  --ring: oklch(0.7 0.2 45.2);
+  
+  /* Status Colors for Dark Mode */
+  --destructive: oklch(0.7 0.22 25.331);
+  --destructive-foreground: oklch(0.95 0.002 106.423);
+  --warning: oklch(0.8 0.17 70.67);
+  --warning-foreground: oklch(0.08 0.004 286.655);
+  --success: oklch(0.67 0.17 142.5);
+  --success-foreground: oklch(0.08 0.004 286.655);
+  --info: oklch(0.6 0.1 192.17);
+  --info-foreground: oklch(0.95 0.002 106.423);
+  
+  /* Chart Colors for Dark Mode */
+  --chart-1: oklch(0.7 0.2 45.2);
+  --chart-2: oklch(0.6 0.1 192.17);
+  --chart-3: oklch(0.67 0.17 142.5);
+  --chart-4: oklch(0.7 0.22 25.331);
+  --chart-5: oklch(0.8 0.17 70.67);
+  
+  /* Sidebar for Dark Mode */
+  --sidebar: oklch(0.1 0.004 286.655);
+  --sidebar-foreground: oklch(0.95 0.002 106.423);
+  --sidebar-primary: oklch(0.7 0.2 45.2);
+  --sidebar-primary-foreground: oklch(0.08 0.004 286.655);
+  --sidebar-accent: oklch(0.15 0.004 286.655);
+  --sidebar-accent-foreground: oklch(0.95 0.002 106.423);
+  --sidebar-border: oklch(0.2 0.004 286.655);
+  --sidebar-ring: oklch(0.7 0.2 45.2);
 }
 
 @layer base {
@@ -242,4 +331,123 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Food App Utility Classes */
+.bg-primary-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+}
+
+.bg-secondary-gradient {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-600) 100%);
+}
+
+.bg-accent-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-600) 100%);
+}
+
+.text-primary-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-primary {
+  box-shadow: 0 4px 14px 0 rgba(255, 127, 0, 0.2);
+}
+
+.shadow-secondary {
+  box-shadow: 0 4px 14px 0 rgba(52, 152, 219, 0.2);
+}
+
+.shadow-accent {
+  box-shadow: 0 4px 14px 0 rgba(46, 204, 113, 0.2);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
+
+.border-secondary {
+  border-color: var(--secondary);
+}
+
+.border-accent {
+  border-color: var(--accent);
+}
+
+.bg-food-orange {
+  background-color: var(--food-orange);
+}
+
+.bg-food-red {
+  background-color: var(--food-red);
+}
+
+.bg-food-green {
+  background-color: var(--food-green);
+}
+
+.bg-food-yellow {
+  background-color: var(--food-yellow);
+}
+
+.bg-food-brown {
+  background-color: var(--food-brown);
+}
+
+.bg-food-cream {
+  background-color: var(--food-cream);
+}
+
+.text-food-orange {
+  color: var(--food-orange);
+}
+
+.text-food-red {
+  color: var(--food-red);
+}
+
+.text-food-green {
+  color: var(--food-green);
+}
+
+.text-food-yellow {
+  color: var(--food-yellow);
+}
+
+.text-food-brown {
+  color: var(--food-brown);
+}
+
+/* Status indicator classes */
+.status-pending {
+  background-color: var(--warning);
+  color: var(--warning-foreground);
+}
+
+.status-confirmed {
+  background-color: var(--info);
+  color: var(--info-foreground);
+}
+
+.status-preparing {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.status-ready {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.status-delivered {
+  background-color: var(--success);
+  color: var(--success-foreground);
+}
+
+.status-cancelled {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
 }

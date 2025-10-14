@@ -1,21 +1,28 @@
 // components/Layout.jsx
-import { AccountSidebar } from '@/components/AccountSideBar';
-import Link from 'next/link';
-import { ReactNode } from 'react';
+import AccountLayout from "@/components/AccountLayout";
+import { AccountSidebar } from "@/components/AccountSideBar";
+import { ReactNode } from "react";
+import "../globals.css"
 
 type Props = {
-    children:ReactNode
-}
+  children: ReactNode;
+};
 
-const Layout = ({ children }:Props) => {
+const Layout = ({ children }: Props) => {
   return (
-    <main>
 
-      <AccountSidebar />
-    <div className="flex p-3 min-h-screen">
-      <main>{children}</main>
-    </div>
-    </main>
+    <html>
+      <body>
+
+      <div className="flex flex-col md:flex-row w-full min-h-screen">
+        <AccountLayout>
+          <AccountSidebar />
+
+          <main className="flex-1 md:ml-64">{children}</main>
+        </AccountLayout>
+      </div>
+      </body>
+    </html>
   );
 };
 
