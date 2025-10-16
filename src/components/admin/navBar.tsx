@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 
 export function AdminNavbar() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,7 @@ export default function VendorRegistrationPage() {
         cuisineType: [formData.cuisineType]
       };
 
-      await register(vendorData as any, true); // true indicates vendor registration
+      await register(vendorData as any,); // true indicates vendor registration
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
       setIsLoading(false);

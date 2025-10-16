@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/authContext';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, ReactNode } from 'react';
 
@@ -7,8 +7,10 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const loading = status === 'loading';
+  const user = session?.user;
 
   useEffect(() => {
     if (!loading && !user) {

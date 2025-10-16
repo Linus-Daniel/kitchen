@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiUser, FiMapPin, FiCreditCard, FiClock, FiLogOut, FiShoppingBag } from 'react-icons/fi';

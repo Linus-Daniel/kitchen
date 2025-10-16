@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import AvatarUpload from './AvatarUpload';
 import LoadingSpinner from './LoadingSpinner';
 import { FiEdit2, FiSave, FiX, FiMail, FiPhone, FiMapPin, FiUser, FiBriefcase, FiInfo } from 'react-icons/fi';

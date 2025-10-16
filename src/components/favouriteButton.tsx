@@ -1,7 +1,7 @@
 import { FiHeart } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useFavoriteStatus } from '@/hooks/useFavorites';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 
 interface FavoriteButtonProps {

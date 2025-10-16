@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useAuth } from './authContext';
+import { useAuth } from '@/hooks/useAuth';
 import { apiClient } from '@/lib/api';
 import { StaticImageData } from "next/image";
 

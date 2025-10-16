@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { useCart } from '@/hooks/useCart';
+import { useCartStore, CartItem } from '@/stores/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiCreditCard, FiHome, FiMapPin } from 'react-icons/fi';
@@ -21,7 +21,14 @@ interface ShippingAddress {
 }
 
 const CheckoutPage = () => {
-  const { cartItems, cartCount, removeFromCart, updateQuantity, clearCart, loading: cartLoading } = useCart();
+  const { 
+    items: cartItems, 
+    cartCount, 
+    removeItem: removeFromCart, 
+    updateQuantity, 
+    clearCart, 
+    isLoading: cartLoading 
+  } = useCartStore();
   const { user, loading: authLoading } = useAuth();
   const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('delivery');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('paystack');
@@ -38,7 +45,7 @@ const CheckoutPage = () => {
   });
 
   const subtotal = cartItems.reduce(
-    (sum: number, item) => sum + item.price * item.quantity,
+    (sum: number, item: CartItem) => sum + item.price * item.quantity,
     0
   );
   const deliveryFee = deliveryOption === 'delivery' ? 2.99 : 0;
@@ -462,15 +469,15 @@ const CheckoutPage = () => {
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
               
               <div className="space-y-4 mb-6">
-                {cartItems.map((item) => (
-                  <div key={`${item.id}-${item.selectedOption?.map(opt => opt.name).join('-') || 'default'}`} className="flex justify-between">
+                {cartItems.map((item: CartItem) => (
+                  <div key={`${item.id}-${item.selectedOption?.map((opt: {name: string; price: number}) => opt.name).join('-') || 'default'}`} className="flex justify-between">
                     <div>
                       <div className="font-medium">
                         {item.quantity} × {item.name}
                       </div>
                       {item.selectedOption && item.selectedOption.length > 0 && (
                         <div className="text-sm text-gray-500">
-                          {item.selectedOption.map(opt => `${opt.name}`)}
+                          {item.selectedOption.map((opt: {name: string; price: number}) => `${opt.name}`)}
                         </div>
                       )}
                     </div>

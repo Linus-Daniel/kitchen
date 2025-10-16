@@ -4,7 +4,7 @@ import { FiX, FiStar, FiClock, FiPlus, FiMinus, FiHeart } from "react-icons/fi";
 import { AddToCart, Option } from "@/types";
 import { Product } from "@/hooks/useProducts";
 import { useState } from "react";
-import { useCart } from "@/context/cartContext";
+import { useCart } from "@/hooks/useCart";
 
 type Props = {
   product: Product;

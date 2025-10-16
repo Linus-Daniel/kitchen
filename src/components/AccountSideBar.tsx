@@ -1,7 +1,7 @@
 // components/AccountSideBar.jsx
 "use client";
 
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/hooks/useAuth";
 import {
   FiUser,
   FiMapPin,

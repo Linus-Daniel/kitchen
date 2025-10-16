@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaStore } from "react-icons/fa";

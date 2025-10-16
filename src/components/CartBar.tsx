@@ -1,5 +1,5 @@
 "use client"
-import { useCart } from '@/context/cartContext';
+import { useCart } from '@/hooks/useCart';
 import { CartItem, Product } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiMinus, FiPlus } from 'react-icons/fi';

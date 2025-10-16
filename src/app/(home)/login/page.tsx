@@ -1,7 +1,7 @@
 "use client"
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';
@@ -9,23 +9,12 @@ import { FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, loading, error } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e:FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      await login(email, password);
-      // Router.push is handled in the auth context based on user role
-    } catch (err:any) {
-      setError(err.message || 'Login failed. Please try again.');
-      setIsLoading(false);
-    }
+    login({ email, password });
   };
 
   return (
@@ -120,12 +109,12 @@ const LoginPage = () => {
           <div>
             <motion.button
               type="submit"
-              className="w-full bg-amber-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-amber-700 transition-colors flex justify-center items-center"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              disabled={isLoading}
+              disabled={loading}
+              className="w-full bg-amber-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-amber-700 transition-colors flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={{ scale: loading ? 1 : 1.01 }}
+              whileTap={{ scale: loading ? 1 : 0.99 }}
             >
-              {isLoading ? (
+              {loading ? (
                 <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               ) : (
                 'Sign In'

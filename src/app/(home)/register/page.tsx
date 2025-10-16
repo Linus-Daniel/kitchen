@@ -1,7 +1,7 @@
 'use client';
 import { FormEvent, ChangeEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { FiUser, FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';

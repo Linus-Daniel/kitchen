@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiBell, FiX, FiCheck, FiTrash2, FiLoader } from 'react-icons/fi';
 import { useNotifications } from '@/hooks/useNotifications';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NotificationPanelProps {
   className?: string;

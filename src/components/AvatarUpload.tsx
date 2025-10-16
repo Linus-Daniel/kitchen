@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from 'react';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import LoadingSpinner from './LoadingSpinner';
 import { FiCamera, FiUser, FiUpload } from 'react-icons/fi';
 

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { useAuth } from '@/context/authContext';
+import { useAuth } from '@/hooks/useAuth';
 import LoadingSpinner from './LoadingSpinner';
 import { FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 

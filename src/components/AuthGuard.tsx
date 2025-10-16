@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/authContext';
+import { useSession } from 'next-auth/react';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -16,8 +16,10 @@ export default function AuthGuard({
   redirectTo = '/login',
   fallback 
 }: AuthGuardProps) {
-  const { user, loading } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const loading = status === 'loading';
+  const user = session?.user;
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
