@@ -8,6 +8,13 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
+
+    // DEBUG: Log all search params
+    console.log("=== SEARCH PARAMS ===");
+    searchParams.forEach((value, key) => {
+      console.log(`${key}: "${value}" (type: ${typeof value})`);
+    });
+
     const vendor = searchParams.get("vendor");
     const category = searchParams.get("category");
     const search = searchParams.get("search");
@@ -21,15 +28,21 @@ export async function GET(req: NextRequest) {
 
     let query: any = { isAvailable: true };
 
+    // DEBUG: Log each condition
+    console.log("vendor:", vendor, "| truthy:", !!vendor);
     if (vendor) {
+      console.log("Adding vendor to query:", vendor);
       query.vendor = vendor;
     }
 
+    console.log("category:", category, "| truthy:", !!category);
     if (category) {
+      console.log("Adding category to query:", category);
       query.category = category;
     }
 
     if (search) {
+      console.log("Adding search to query:", search);
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
@@ -37,17 +50,19 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    // Price filtering
     if (minPrice > 0 || maxPrice < 999999) {
+      console.log("Adding price filter:", minPrice, "-", maxPrice);
       query.price = { $gte: minPrice, $lte: maxPrice };
     }
 
-    // Rating filtering
     if (minRating > 0) {
+      console.log("Adding rating filter:", minRating);
       query.rating = { $gte: minRating };
     }
 
-    // Build sort object
+    console.log("=== FINAL QUERY ===");
+    console.log(JSON.stringify(query, null, 2));
+
     const sortObj: any = {};
     sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
 
@@ -57,12 +72,14 @@ export async function GET(req: NextRequest) {
       .skip((page - 1) * limit)
       .sort(sortObj);
 
+    console.log("Products found:", products.length);
+
     const total = await Product.countDocuments(query);
 
-    // Get available categories for filtering
-    const categories = await Product.distinct("category", { isAvailable: true });
+    const categories = await Product.distinct("category", {
+      isAvailable: true,
+    });
 
-    // Get price range
     const priceRange = await Product.aggregate([
       { $match: { isAvailable: true } },
       {
@@ -88,7 +105,6 @@ export async function GET(req: NextRequest) {
     return errorHandler(error as any, req);
   }
 }
-
 export async function POST(req: NextRequest) {
   try {
     await connectDB();

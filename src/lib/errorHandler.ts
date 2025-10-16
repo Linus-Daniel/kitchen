@@ -57,6 +57,7 @@ export async function protect(req: NextRequest): Promise<IUser> {
 
   if (req.headers.get("authorization")?.startsWith("Bearer")) {
     token = req.headers.get("authorization")!.split(" ")[1];
+    
   }
 
   if (!token) {
@@ -101,6 +102,35 @@ export async function vendorProtect(req: NextRequest): Promise<IVendor> {
     }
 
     return vendor;
+  } catch (err) {
+    throw new ErrorResponse("Not authorized to access this route", 401);
+  }
+}
+
+export async function adminProtect(req: NextRequest): Promise<IUser> {
+  let token;
+
+  if (req.headers.get("authorization")?.startsWith("Bearer")) {
+    token = req.headers.get("authorization")!.split(" ")[1];
+  }
+
+  if (!token) {
+    throw new ErrorResponse("Not authorized to access this route", 401);
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+
+    if (decoded.role !== "admin") {
+      throw new ErrorResponse("Not authorized as admin", 401);
+    }
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      throw new ErrorResponse("Admin user not found", 401);
+    }
+
+    return user;
   } catch (err) {
     throw new ErrorResponse("Not authorized to access this route", 401);
   }

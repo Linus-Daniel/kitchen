@@ -115,25 +115,25 @@ export const useProduct = (id: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id) return;
-      
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await apiClient.getProduct(id);
-        setProduct(response.data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch product');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProduct = async () => {
+    if (!id) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiClient.getProduct(id);
+      setProduct(response.data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch product');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProduct();
   }, [id]);
 
-  return { product, loading, error, refetch: () => fetchProduct() };
+  return { product, loading, error, refetch: fetchProduct };
 };

@@ -149,7 +149,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const addToCart = async (product: Product, quantity: number = 1, selectedOption?: { name: string; price: number }[]) => {
     setLoading(true);
     setError(null);
-    console.log("Initializing adding to cart");
 
     const cartItem: CartItem = {
       ...product,
@@ -162,7 +161,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       if (user) {
         // Authenticated user - sync with backend
         await apiClient.addToCart({
-          productId: product._id || product.id,
+          productId: product.id,
           quantity,
           selectedOptions: selectedOption as any,
         });
@@ -170,15 +169,15 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       } else {
         // Guest user - local storage only
         setCartItems(prevItems => {
-          const productId = product._id || product.id;
+          const productId = product.id;
           const existingItem = prevItems.find(
-            item => (item._id || item.id) === productId && 
+            item => item.id === productId && 
                    JSON.stringify(item.selectedOption) === JSON.stringify(selectedOption)
           );
 
           if (existingItem) {
             return prevItems.map(item =>
-              (item._id || item.id) === productId && 
+              item.id === productId && 
               JSON.stringify(item.selectedOption) === JSON.stringify(selectedOption)
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
@@ -202,13 +201,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       if (user) {
         // Authenticated user - sync with backend
-        await apiClient.removeFromCart(productId, selectedOptionName);
+        await apiClient.removeFromCart(productId);
         await syncCart();
       } else {
         // Guest user - local storage only
         setCartItems(prevItems =>
           prevItems.filter(
-            item => !((item._id || item.id) === productId && 
+            item => !(item.id === productId && 
                      (!selectedOptionName || 
                       item.selectedOption?.some(opt => opt.name === selectedOptionName)))
           )
@@ -230,13 +229,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       if (user) {
         // Authenticated user - sync with backend
-        await apiClient.updateCartItem(productId, newQuantity, selectedOptionName);
+        await apiClient.updateCartItem(productId, newQuantity);
         await syncCart();
       } else {
         // Guest user - local storage only
         setCartItems(prevItems =>
           prevItems.map(item =>
-            (item._id || item.id) === productId && 
+            item.id === productId && 
             (!selectedOptionName || 
              item.selectedOption?.some(opt => opt.name === selectedOptionName))
               ? { ...item, quantity: newQuantity }
@@ -270,7 +269,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     }
   };
 
-  console.log(cartItems)
   return (
     <CartContext.Provider
       value={{

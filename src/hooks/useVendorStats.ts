@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
 
 export interface VendorStats {
-  todayOrders: number;
+  todayOrders?: number;
   totalRevenue: number;
-  activeProducts: number;
+  productCount: number;
   averageRating: number;
   revenueChange: number;
   ordersChange: number;
@@ -22,8 +22,8 @@ export const useVendorStats = () => {
     setError(null);
     
     try {
-      const response = await apiClient.getVendorStats();
-      setStats(response.data);
+      const response = await apiClient.getVendorAnalytics();
+      setStats(response.data.summary);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch vendor stats');
     } finally {

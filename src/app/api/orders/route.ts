@@ -3,7 +3,10 @@ import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import Cart from "@/models/Cart";
 import Product from "@/models/Product";
+import User from "@/models/User";
+import Vendor from "@/models/Vendor";
 import { protect, ErrorResponse, errorHandler } from "@/lib/errorHandler";
+import { emailService } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -71,11 +74,40 @@ export async function POST(req: NextRequest) {
       specialInstructions,
     });
 
-    // Clear cart after order creation
-    await Cart.findOneAndUpdate(
-      { user: user._id },
-      { $set: { items: [], totalPrice: 0 } }
-    );
+    // Clear cart only for cash on delivery orders
+    // For Paystack orders, cart will be cleared after successful payment verification
+    if (paymentMethod === 'Cash on Delivery') {
+      await Cart.findOneAndUpdate(
+        { user: user._id },
+        { $set: { items: [], totalPrice: 0 } }
+      );
+    }
+
+    // Send email notifications
+    try {
+      // Get user details for email
+      const userDetails = await User.findById(user._id);
+      
+      // Send order confirmation to customer
+      if (userDetails?.email) {
+        await emailService.sendOrderConfirmation(userDetails.email, order);
+      }
+
+      // Send new order notifications to vendors
+      for (const vendorOrder of vendorOrders) {
+        const vendor = await Vendor.findById((vendorOrder as any).vendor);
+        if (vendor?.email) {
+          await emailService.sendVendorOrderNotification(vendor.email, {
+            ...order._doc,
+            orderItems: (vendorOrder as any).items,
+            user: userDetails
+          });
+        }
+      }
+    } catch (emailError) {
+      console.error('Failed to send email notifications:', emailError);
+      // Don't fail the order creation if email fails
+    }
 
     return NextResponse.json(
       {

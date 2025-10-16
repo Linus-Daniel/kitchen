@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import ProductModal from "./ProductModal";
 import { AddToCart } from "@/types";
 import { useProducts, Product } from "@/hooks/useProducts";
+import { ServerProduct } from "@/lib/server-actions";
 
 type Props = {
-  addToCart: AddToCart;
+  addToCart?: AddToCart;
   showFavorites: boolean;
   selectedCategory: string;
   searchQuery: string;
@@ -18,6 +19,8 @@ type Props = {
     rating: number;
     deliveryTime: number;
   };
+  initialProducts?: ServerProduct[];
+  serverSide?: boolean;
 };
 
 const StoreGrid = ({
@@ -26,16 +29,13 @@ const StoreGrid = ({
   selectedCategory,
   searchQuery,
   filterOptions,
+  initialProducts = [],
+  serverSide = false,
 }: Partial<Props>) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  const { 
-    products, 
-    loading, 
-    error, 
-    pagination,
-    updateFilters 
-  } = useProducts({
+  // Use hook for client-side only
+  const hookResult = useProducts({
     page: 1,
     limit: 20,
     category: selectedCategory !== 'all' ? selectedCategory : undefined,
@@ -45,15 +45,26 @@ const StoreGrid = ({
     minRating: filterOptions?.rating || undefined,
   });
 
-  useEffect(() => {
-    updateFilters({
+  // Use server-side data when available, fallback to hook
+  const products = serverSide ? initialProducts : hookResult.products;
+  const loading = serverSide ? false : hookResult.loading;
+  const error = serverSide ? null : hookResult.error;
+  const pagination = serverSide ? { page: 1, limit: 20, total: initialProducts.length, count: initialProducts.length } : hookResult.pagination;
+
+useEffect(() => {
+  // Only update filters for client-side rendering
+  if (!serverSide && hookResult.updateFilters) {
+    const newFilters = {
       category: selectedCategory !== 'all' ? selectedCategory : undefined,
       search: searchQuery || undefined,
       minPrice: filterOptions?.priceRange[0],
       maxPrice: filterOptions?.priceRange[1],
       minRating: filterOptions?.rating || undefined,
-    });
-  }, [selectedCategory, searchQuery, filterOptions, updateFilters]);
+    };
+    
+    hookResult.updateFilters(newFilters);
+  }
+}, [selectedCategory, searchQuery, filterOptions, serverSide, hookResult.updateFilters]);
 
   if (loading) {
     return (

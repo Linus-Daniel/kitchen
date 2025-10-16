@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import Payment from "@/models/Payment";
+import User from "@/models/User";
 import { protect, ErrorResponse, errorHandler } from "@/lib/errorHandler";
+import { emailService } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,9 +31,35 @@ export async function POST(req: NextRequest) {
       throw new ErrorResponse("Payment record not found", 404);
     }
 
-    // In a real application, you would verify with Paystack API
-    // For this example, we'll simulate a successful payment
-    const isPaymentSuccessful = true; // This would come from Paystack verification
+    // Verify with Paystack API
+    const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+    let isPaymentSuccessful = false;
+    let transactionData = null;
+
+    if (paystackSecretKey && payment.paymentMethod === "Paystack") {
+      try {
+        const verifyUrl = `https://api.paystack.co/transaction/verify/${reference}`;
+        const verifyResponse = await fetch(verifyUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${paystackSecretKey}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const verifyData = await verifyResponse.json();
+        
+        if (verifyData.status && verifyData.data.status === 'success') {
+          isPaymentSuccessful = true;
+          transactionData = verifyData.data;
+        }
+      } catch (verifyError) {
+        console.error('Paystack verification error:', verifyError);
+      }
+    } else {
+      // Fallback for other payment methods or missing configuration
+      isPaymentSuccessful = true;
+    }
 
     if (isPaymentSuccessful) {
       // Update payment status
@@ -55,6 +83,20 @@ export async function POST(req: NextRequest) {
       };
       order.orderStatus = "Confirmed";
       await order.save();
+
+      // Send payment confirmation email
+      try {
+        const userDetails = await User.findById(user._id);
+        if (userDetails?.email) {
+          await emailService.sendPaymentConfirmation(userDetails.email, order, {
+            paymentId: reference,
+            method: 'Credit Card'
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send payment confirmation email:', emailError);
+        // Don't fail the request if email fails
+      }
 
       return NextResponse.json({
         success: true,

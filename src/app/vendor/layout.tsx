@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { VendorSidebar } from "@/components/vendor/SideBar";
 import { VendorNavbar } from "@/components/vendor/NavBar";
-import { AuthProvider } from "@/context/authContext";
+import { Providers } from "@/providers/Providers";
 import { VendorLayoutClient } from "@/components/vendor/VendorLayout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Vendor Dashboard",
@@ -27,9 +18,9 @@ export default function VendorLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" >
       <body className="antialiased">
-        <AuthProvider>
+        <Providers>
           <div className="flex min-h-screen bg-gray-50">
             {/* Vendor Sidebar */}
             <aside className="hidden md:block fixed inset-y-0 left-0 z-30 w-64 border-r bg-white">
@@ -49,7 +40,7 @@ export default function VendorLayout({
               </main>
             </div>
           </div>
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

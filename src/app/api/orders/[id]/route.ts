@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Order from "@/models/Order";
+import User from "@/models/User";
 import { protect, ErrorResponse, errorHandler } from "@/lib/errorHandler";
+import { emailService } from "@/lib/email";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -57,6 +59,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       throw new ErrorResponse("Cannot cancel order at this stage", 400);
     }
 
+    const previousStatus = order.orderStatus;
     order.orderStatus = orderStatus;
 
     if (orderStatus === "Completed") {
@@ -65,6 +68,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     await order.save();
+
+    // Send email notification for status change
+    try {
+      if (previousStatus !== orderStatus) {
+        const userDetails = await User.findById(order.user);
+        if (userDetails?.email) {
+          await emailService.sendOrderStatusUpdate(userDetails.email, order, orderStatus);
+        }
+      }
+    } catch (emailError) {
+      console.error('Failed to send status update email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json({
       success: true,

@@ -5,13 +5,12 @@ import Link from 'next/link';
 import { FiShoppingCart, FiUser, FiHeart, FiSearch, FiMenu, FiX } from 'react-icons/fi';
 import { FormEvent, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useCart } from '@/context/cartContext';
-import { useAuth } from '@/context/authContext';
+import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
 import { NotificationPanel } from './NotificationPanel';
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
-  { name: 'Menu', path: '/store' },
   { name: 'About', path: '/#about' },
   { name: 'Contact', path: '/#contact' },
 ];
@@ -29,7 +28,7 @@ const Header = () => {
   const handleSearch = useCallback((e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/store?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/?search=${encodeURIComponent(searchQuery)}`);
       setIsMobileMenuOpen(false);
     }
   }, [searchQuery, router]);

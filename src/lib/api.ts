@@ -7,6 +7,7 @@ export interface ApiResponse<T = any> {
   message?: string;
   error?: string;
   count?: number;
+  token:string;
   total?: number;
   filters?: any;
   unreadCount?: number;
@@ -24,6 +25,7 @@ export interface ProductFilters extends PaginationParams {
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
+  dietary?: string[];
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -138,7 +140,7 @@ class ApiClient {
   private async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
       const response: AxiosResponse<ApiResponse<T>> = await this.client.request(config);
-      return response.data;
+      return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.error || error.message || 'An error occurred');
     }
@@ -528,6 +530,13 @@ class ApiClient {
   }
 
   // Vendor-specific endpoints
+  async getVendors(): Promise<ApiResponse<any[]>> {
+    return this.request({
+      method: 'GET',
+      url: '/vendors',
+    });
+  }
+
   async getVendorProfile(): Promise<ApiResponse<any>> {
     return this.request({
       method: 'GET',

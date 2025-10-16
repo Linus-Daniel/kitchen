@@ -29,7 +29,7 @@ export const useAdminUsers = (filters?: PaginationParams & { role?: string; isAc
     
     try {
       const filterParams = { ...filters, ...newFilters };
-      const response = await apiClient.getAdminUsers(filterParams);
+      const response = await apiClient.getUsers(filterParams);
       
       setUsers(response.data || []);
       setPagination({
@@ -47,7 +47,7 @@ export const useAdminUsers = (filters?: PaginationParams & { role?: string; isAc
 
   const updateUserStatus = async (userId: string, isActive: boolean): Promise<void> => {
     try {
-      await apiClient.updateUserStatus(userId, isActive);
+      await apiClient.updateUser(userId, { isActive });
       // Update local state
       setUsers(prev => 
         prev.map(user => 

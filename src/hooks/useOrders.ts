@@ -143,25 +143,25 @@ export const useOrder = (id: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      if (!id) return;
-      
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await apiClient.getOrder(id);
-        setOrder(response.data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch order');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchOrder = async () => {
+    if (!id) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiClient.getOrder(id);
+      setOrder(response.data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch order');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchOrder();
   }, [id]);
 
-  return { order, loading, error, refetch: () => fetchOrder() };
+  return { order, loading, error, refetch: fetchOrder };
 };

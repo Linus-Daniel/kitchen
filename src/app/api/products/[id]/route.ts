@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import Product from "@/models/Product";
 import {
   vendorProtect,
+  adminProtect,
   ErrorResponse,
   errorHandler,
 } from "@/lib/errorHandler";
@@ -35,7 +36,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await connectDB();
 
     const { id } = await params;
-    const vendor = await vendorProtect(req);
     const body = await req.json();
 
     let product = await Product.findById(id);
@@ -44,7 +44,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       throw new ErrorResponse("Product not found", 404);
     }
 
-    if (product.vendor.toString() !== vendor._id.toString()) {
+    // Check if user is admin or vendor who owns the product
+    let isAuthorized = false;
+    try {
+      await adminProtect(req);
+      isAuthorized = true; // Admin can edit any product
+    } catch (adminError) {
+      // If not admin, check if vendor owns the product
+      try {
+        const vendor = await vendorProtect(req);
+        if (product.vendor.toString() === vendor._id.toString()) {
+          isAuthorized = true;
+        }
+      } catch (vendorError) {
+        // Neither admin nor vendor
+      }
+    }
+
+    if (!isAuthorized) {
       throw new ErrorResponse("Not authorized to update this product", 401);
     }
 
@@ -67,7 +84,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     await connectDB();
 
     const { id } = await params;
-    const vendor = await vendorProtect(req);
 
     const product = await Product.findById(id);
 
@@ -75,7 +91,24 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       throw new ErrorResponse("Product not found", 404);
     }
 
-    if (product.vendor.toString() !== vendor._id.toString()) {
+    // Check if user is admin or vendor who owns the product
+    let isAuthorized = false;
+    try {
+      await adminProtect(req);
+      isAuthorized = true; // Admin can delete any product
+    } catch (adminError) {
+      // If not admin, check if vendor owns the product
+      try {
+        const vendor = await vendorProtect(req);
+        if (product.vendor.toString() === vendor._id.toString()) {
+          isAuthorized = true;
+        }
+      } catch (vendorError) {
+        // Neither admin nor vendor
+      }
+    }
+
+    if (!isAuthorized) {
       throw new ErrorResponse("Not authorized to delete this product", 401);
     }
 

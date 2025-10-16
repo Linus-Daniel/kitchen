@@ -15,9 +15,11 @@ export default function VendorDashboard() {
     limit: 5 
   });
 
+  console.log('Vendor Stats:', stats);
+
   const formatChange = (change: number) => {
     const sign = change >= 0 ? '+' : '';
-    return `${sign}${change.toFixed(1)}%`;
+    return `${sign}${change?.toFixed(1)}%`;
   };
 
   const getStatColor = (change: number) => {
@@ -25,33 +27,27 @@ export default function VendorDashboard() {
   };
 
   const statsData = stats ? [
-    {
-      title: "Today's Orders",
-      value: stats.todayOrders.toString(),
-      change: formatChange(stats.ordersChange),
-      icon: "shoppingCart",
-      changeColor: getStatColor(stats.ordersChange),
-    },
+
     { 
       title: "Total Revenue", 
-      value: `$${stats.totalRevenue.toFixed(2)}`, 
-      change: formatChange(stats.revenueChange), 
+      value: `$${stats?.totalRevenue.toFixed(2)}`, 
+      change: formatChange(stats?.revenueChange), 
       icon: "dollar",
-      changeColor: getStatColor(stats.revenueChange),
+      changeColor: getStatColor(stats?.revenueChange),
     },
     { 
       title: "Active Products", 
-      value: stats.activeProducts.toString(), 
-      change: formatChange(stats.productsChange), 
+      value: stats?.productCount.toString(), 
+      change: formatChange(stats?.productsChange), 
       icon: "package",
-      changeColor: getStatColor(stats.productsChange),
+      changeColor: getStatColor(stats?.productsChange),
     },
     { 
       title: "Customer Reviews", 
-      value: stats.averageRating.toFixed(1), 
-      change: formatChange(stats.ratingChange), 
+      value: stats?.averageRating.toFixed(1), 
+      change: formatChange(stats?.ratingChange), 
       icon: "star",
-      changeColor: getStatColor(stats.ratingChange),
+      changeColor: getStatColor(stats?.ratingChange),
     },
   ] : [];
   return (

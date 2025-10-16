@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 
-const categories = [
+const defaultCategories = [
   { id: "all", name: "All", icon: "🌍" },
   { id: "jollof", name: "Jollof", icon: "🍛" },
   { id: "swallow", name: "Swallow", icon: "🥣" },
@@ -12,17 +12,50 @@ const categories = [
   { id: "dessert", name: "Desserts", icon: "🍯" },
 ];
 
+const categoryIcons: { [key: string]: string } = {
+  "all": "🌍",
+  "appetizers": "🥗",
+  "main-course": "🍽️",
+  "desserts": "🍮",
+  "beverages": "🥤",
+  "salads": "🥗",
+  "pizza": "🍕",
+  "burgers": "🍔",
+  "pasta": "🍝",
+  "seafood": "🦐",
+  "vegetarian": "🥬",
+  "vegan": "🌱",
+  "jollof": "🍛",
+  "swallow": "🥣",
+  "grill": "🔥",
+  "soup": "🍲",
+  "snacks": "🥨",
+  "drinks": "🥤",
+};
+
 type Props = {
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
+  categories?: string[];
 };
 
-const CategoryFilter = ({ selectedCategory, onSelectCategory }: Props) => {
+const CategoryFilter = ({ selectedCategory, onSelectCategory, categories: propCategories }: Props) => {
+  const categoriesData = propCategories 
+    ? [
+        { id: "all", name: "All", icon: categoryIcons["all"] },
+        ...propCategories.map(cat => ({
+          id: cat,
+          name: cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' '),
+          icon: categoryIcons[cat] || "🍽️"
+        }))
+      ]
+    : defaultCategories;
+
   return (
     <div className="relative">
       {/* Scrollable categories with gradient fade */}
       <div className="flex space-x-3 pb-4 overflow-x-auto no-scrollbar">
-        {categories.map((category, index) => (
+        {categoriesData.map((category, index) => (
           <motion.button
             key={category.id}
             onClick={() => onSelectCategory(category.id)}

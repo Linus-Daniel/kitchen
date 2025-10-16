@@ -24,7 +24,7 @@ export const useAdminStats = () => {
     setError(null);
     
     try {
-      const response = await apiClient.getAdminStats();
+      const response = await apiClient.getAdminDashboard();
       setStats(response.data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch admin stats');

@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     const vendor = await Vendor.findOne({ email }).select("+password");
+    console.log(email, password, vendor);
 
     if (!vendor) {
       throw new ErrorResponse("Invalid credentials", 401);

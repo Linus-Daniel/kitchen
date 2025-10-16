@@ -68,7 +68,7 @@ export const useFavorites = (pagination?: PaginationParams) => {
   const toggleFavorite = async (productId: string): Promise<boolean> => {
     try {
       const checkResponse = await apiClient.checkFavorite(productId);
-      if (checkResponse.data.isFavorite) {
+      if (checkResponse.data?.isFavorite) {
         await removeFromFavorites(productId);
         return false;
       } else {
@@ -116,7 +116,7 @@ export const useFavoriteStatus = (productId: string) => {
     
     try {
       const response = await apiClient.checkFavorite(productId);
-      setIsFavorite(response.data.isFavorite);
+      setIsFavorite(response.data?.isFavorite || false);
     } catch (err: any) {
       setError(err.message || 'Failed to check favorite status');
     } finally {

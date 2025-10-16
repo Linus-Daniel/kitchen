@@ -7,16 +7,43 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   avatar?: string;
+  dateOfBirth?: string;
+  gender?: 'male' | 'female' | 'other' | 'prefer-not-to-say';
   address?: {
     street?: string;
     city?: string;
     state?: string;
     zipCode?: string;
+    country?: string;
   };
+  addresses?: Array<{
+    _id: string;
+    label: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    type: 'home' | 'work' | 'other';
+    isDefault: boolean;
+    createdAt: string;
+  }>;
   role: 'user' | 'admin' | 'vendor';
   businessName?: string;
+  businessDescription?: string;
+  businessCategory?: string;
+  preferences?: {
+    newsletter?: boolean;
+    smsNotifications?: boolean;
+    emailNotifications?: boolean;
+    orderUpdates?: boolean;
+    promotions?: boolean;
+  };
+  isEmailVerified?: boolean;
+  createdAt?: string;
+  lastLogin?: string;
 }
 
 interface AuthContextType {
@@ -47,18 +74,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
+          // Set loading to true to prevent flash
+          setLoading(true);
           const response = await apiClient.getProfile();
           setUser(response.data);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
         localStorage.removeItem('token');
+        setUser(null);
       } finally {
-        setLoading(false);
+        // Add a small delay to ensure smooth UI transition
+        setTimeout(() => {
+          setLoading(false);
+        }, 100);
       }
     };
 
-    initializeAuth();
+    // Check if we're in the browser environment
+    if (typeof window !== 'undefined') {
+      initializeAuth();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   // Handle API errors
@@ -76,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         ? await apiClient.vendorLogin({ email, password })
         : await apiClient.login({ email, password });
       
-      const token = response.data?.token;
+      const token = response?.token;
       
       if (!token) {
         throw new Error('No token received');
