@@ -32,6 +32,10 @@ export default async function StorePageWrapper({ searchParams }: StorePageWrappe
       getCategories(),
     ]);
 
+    console.log(productsData)
+
+    
+
     return (
       <StorePageClient
         initialProducts={productsData.products}
@@ -45,6 +49,8 @@ export default async function StorePageWrapper({ searchParams }: StorePageWrappe
         availableCategories={categories}
         availableFilters={productsData.filters}
       />
+
+    
     );
   } catch (error) {
     console.error('Error in StorePageWrapper:', error);

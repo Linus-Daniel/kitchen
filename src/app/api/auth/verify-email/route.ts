@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const { token } = validatedData
 
     logger.info('Email verification attempt', {
-      ip: req.ip,
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
       userAgent: req.headers.get('user-agent'),
     })
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     if (result.success) {
       logger.info('Email verification successful', {
         userId: result.userId,
-        ip: req.ip,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
       })
 
       return NextResponse.json({
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     } else {
       logger.warn('Email verification failed', {
         message: result.message,
-        ip: req.ip,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
       })
 
       return NextResponse.json({
@@ -52,17 +52,18 @@ export async function POST(req: NextRequest) {
       }, { status: 400 })
     }
   } catch (error) {
+    const err = error as Error
     logger.error('Email verification API error', {
-      error: error.message,
-      stack: error.stack,
-      ip: req.ip,
+      error: err.message,
+      stack: err.stack,
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
     })
 
-    if (error.name === 'ValidationError') {
+    if (err.name === 'ValidationError') {
       return NextResponse.json({
         success: false,
         error: 'Invalid verification data',
-        details: error.errors,
+        details: (err as any).errors,
       }, { status: 400 })
     }
 
@@ -96,7 +97,7 @@ export async function PUT(req: NextRequest) {
 
     logger.info('Resend verification email request', {
       email,
-      ip: req.ip,
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
     })
 
     const result = await emailVerificationService.resendVerificationEmail(email)
@@ -106,9 +107,10 @@ export async function PUT(req: NextRequest) {
       message: result.message,
     }, { status: result.success ? 200 : 400 })
   } catch (error) {
+    const err = error as Error
     logger.error('Resend verification email API error', {
-      error: error.message,
-      ip: req.ip,
+      error: err.message,
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
     })
 
     return NextResponse.json({

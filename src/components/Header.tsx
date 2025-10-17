@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FiShoppingCart, FiUser, FiHeart, FiSearch, FiMenu, FiX } from 'react-icons/fi';
 import { FormEvent, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useCart } from '@/hooks/useCart';
+import { useCartStore } from '@/stores/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationPanel } from './NotificationPanel';
 
@@ -20,7 +20,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const pathName = usePathname();
-  const { cartCount } = useCart();
+  const { cartCount } = useCartStore();
   const { user } = useAuth();
 
   if (pathName.startsWith('/admin')) return null;

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Vendor from "@/models/Vendor";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // adjust path to your next-auth config
 import { IUser, IVendor } from "@/types";
 
 export class ErrorResponse extends Error {
@@ -53,96 +55,46 @@ export function errorHandler(err: MongooseError, req: NextRequest, res?: NextRes
 }
 
 export async function protect(req: NextRequest): Promise<IUser> {
-  let token;
+  const session = await getServerSession(authOptions);
 
-  if (req.headers.get("authorization")?.startsWith("Bearer")) {
-    token = req.headers.get("authorization")!.split(" ")[1];
-    
-  }
-
-  if (!token) {
+  if (!session || !session.user?.email) {
     throw new ErrorResponse("Not authorized to access this route", 401);
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      throw new ErrorResponse("User not found", 401);
-    }
-
-    return user;
-  } catch (err) {
-    throw new ErrorResponse("Not authorized to access this route", 401);
+  const user = await User.findOne({ email: session.user.email });
+  if (!user) {
+    throw new ErrorResponse("User not found", 401);
   }
+
+  return user;
 }
 
 export async function vendorProtect(req: NextRequest): Promise<IVendor> {
-  let token;
+  const session = await getServerSession(authOptions);
 
-  if (req.headers.get("authorization")?.startsWith("Bearer")) {
-    token = req.headers.get("authorization")!.split(" ")[1];
+  if (!session || !session.user?.email || session.user.role !== "vendor") {
+    throw new ErrorResponse("Not authorized as vendor", 401);
   }
 
-  if (!token) {
-    throw new ErrorResponse("Not authorized to access this route", 401);
+  const vendor = await Vendor.findOne({ email: session.user.email });
+  if (!vendor) {
+    throw new ErrorResponse("Vendor not found", 401);
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-
-    if (decoded.role !== "vendor") {
-      throw new ErrorResponse("Not authorized as vendor", 401);
-    }
-
-    const vendor = await Vendor.findById(decoded.id);
-    if (!vendor) {
-      throw new ErrorResponse("Vendor not found", 401);
-    }
-
-    return vendor;
-  } catch (err) {
-    throw new ErrorResponse("Not authorized to access this route", 401);
-  }
+  return vendor;
 }
 
 export async function adminProtect(req: NextRequest): Promise<IUser> {
-  let token;
+  const session = await getServerSession(authOptions);
 
-  if (req.headers.get("authorization")?.startsWith("Bearer")) {
-    token = req.headers.get("authorization")!.split(" ")[1];
+  if (!session || !session.user?.email || session.user.role !== "admin") {
+    throw new ErrorResponse("Not authorized as admin", 401);
   }
 
-  if (!token) {
-    throw new ErrorResponse("Not authorized to access this route", 401);
+  const user = await User.findOne({ email: session.user.email });
+  if (!user) {
+    throw new ErrorResponse("Admin user not found", 401);
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-
-    if (decoded.role !== "admin") {
-      throw new ErrorResponse("Not authorized as admin", 401);
-    }
-
-    const user = await User.findById(decoded.id);
-    if (!user) {
-      throw new ErrorResponse("Admin user not found", 401);
-    }
-
-    return user;
-  } catch (err) {
-    throw new ErrorResponse("Not authorized to access this route", 401);
-  }
-}
-
-export function authorize(...roles: string[]) {
-  return (user: IUser) => {
-    if (!roles.includes(user.role)) {
-      throw new ErrorResponse(
-        `User role ${user.role} is not authorized to access this route`,
-        403
-      );
-    }
-  };
+  return user;
 }

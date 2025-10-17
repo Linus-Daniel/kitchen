@@ -35,8 +35,8 @@ const envSchema = z.object({
   
   // Security
   CORS_ORIGIN: z.string().url().default('http://localhost:3000'),
-  RATE_LIMIT_MAX: z.string().transform(Number).pipe(z.number().int().positive()).default('100'),
-  RATE_LIMIT_WINDOW_MS: z.string().transform(Number).pipe(z.number().int().positive()).default('900000'),
+  RATE_LIMIT_MAX: z.string().transform(Number).pipe(z.number().int().positive()).default(100),
+  RATE_LIMIT_WINDOW_MS: z.string().transform(Number).pipe(z.number().int().positive()).default(900000),
   ENCRYPTION_KEY: z.string().length(32, 'Encryption key must be exactly 32 characters').optional(),
   
   // Monitoring
@@ -58,7 +58,7 @@ function validateEnv(): Env {
     return parsed
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const missingVars = error.errors.map(err => 
+      const missingVars = error.issues.map(err => 
         `${err.path.join('.')}: ${err.message}`
       ).join('\n')
       

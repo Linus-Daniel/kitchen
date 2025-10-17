@@ -112,7 +112,7 @@ export class PaginationService {
     const sortBy = options.sortBy || 'createdAt'
     const sortOrder = options.sortOrder === 'asc' ? 1 : -1
 
-    const sort = { [sortBy]: sortOrder }
+    const sort: Record<string, 1 | -1> = { [sortBy]: sortOrder }
 
     return { page, limit, skip, sort }
   }
@@ -191,9 +191,10 @@ export class PaginationService {
 
       return this.createResult(data, page, limit, total, sortBy, sortOrder)
     } catch (error) {
+      const err = error as Error
       logger.error('Pagination aggregation failed', {
         model: model.collection?.name,
-        error: error.message,
+        error: err.message,
         pipeline: JSON.stringify(pipeline),
       })
       throw error
@@ -226,9 +227,10 @@ export class PaginationService {
 
       return this.createResult(data, page, limit, total, options.sortBy, options.sortOrder)
     } catch (error) {
+      const err = error as Error
       logger.error('Pagination find failed', {
         model: model.collection?.name,
-        error: error.message,
+        error: err.message,
         filter: JSON.stringify(filter),
         options,
       })
@@ -289,9 +291,10 @@ export class PaginationService {
         hasMore,
       }
     } catch (error) {
+      const err = error as Error
       logger.error('Cursor pagination failed', {
         model: model.collection?.name,
-        error: error.message,
+        error: err.message,
         cursor,
         sortField,
         sortOrder,

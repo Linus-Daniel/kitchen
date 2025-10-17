@@ -53,11 +53,11 @@ export class SearchService {
         return
       }
 
-      await model.collection.createIndex(fields, {
+      await model.collection.createIndex(fields as any, {
         background: true,
         name: `${model.collection.name}_text_search`,
         ...options,
-      })
+      } as any)
 
       this.indexesCreated.add(indexKey)
       logger.info(`Created text index for ${model.collection.name}`, { fields })
@@ -79,11 +79,11 @@ export class SearchService {
         return
       }
 
-      await model.collection.createIndex(fields, {
+      await model.collection.createIndex(fields as any, {
         background: true,
         name: `${model.collection.name}_compound_${Object.keys(fields).join('_')}`,
         ...options,
-      })
+      } as any)
 
       this.indexesCreated.add(indexKey)
       logger.info(`Created compound index for ${model.collection.name}`, { fields })
@@ -167,7 +167,7 @@ export class SearchService {
         ]
       }
 
-      pipeline.push({ $facet: facetPipeline })
+      pipeline.push({ $facet: facetPipeline as any })
 
       // Execute aggregation
       const [result] = await model.aggregate(pipeline)
@@ -211,11 +211,12 @@ export class SearchService {
         searchTime,
       }
     } catch (error) {
+      const err = error as Error
       const searchTime = Date.now() - startTime
       logger.error('Search failed', {
         collection: model.collection.name,
         query: options.query,
-        error: error.message,
+        error: err.message,
         searchTime,
       })
       throw error
@@ -259,11 +260,12 @@ export class SearchService {
       const results = await model.aggregate(pipeline)
       return results.map((item: any) => item.suggestion).filter(Boolean)
     } catch (error) {
+      const err = error as Error
       logger.error('Suggestion search failed', {
         collection: model.collection.name,
         query,
         field,
-        error: error.message,
+        error: err.message,
       })
       return []
     }
@@ -344,11 +346,12 @@ export class SearchService {
         searchTime,
       }
     } catch (error) {
+      const err = error as Error
       const searchTime = Date.now() - startTime
       logger.error('Geo search failed', {
         collection: model.collection.name,
         coordinates: [longitude, latitude],
-        error: error.message,
+        error: err.message,
         searchTime,
       })
       throw error
@@ -365,7 +368,7 @@ export class SearchService {
         if (index.fields.$text) {
           await this.createTextIndex(model, index.fields, index.options)
         } else {
-          await this.createCompoundIndex(model, index.fields, index.options)
+          await this.createCompoundIndex(model, index.fields as Record<string, 1 | -1>, index.options)
         }
       }
       logger.info(`Initialized ${indexes.length} indexes for ${model.collection.name}`)
@@ -377,14 +380,14 @@ export class SearchService {
   // Get search statistics
   async getSearchStats(model: mongoose.Model<any>): Promise<any> {
     try {
-      const stats = await model.collection.stats()
-      const indexes = await model.collection.indexes()
+      const stats = await (model.collection as any).stats()
+      const indexes = await (model.collection as any).indexes()
       
       return {
         totalDocuments: stats.count,
         totalSize: stats.size,
         avgDocumentSize: stats.avgObjSize,
-        indexes: indexes.map(index => ({
+        indexes: indexes.map((index: any) => ({
           name: index.name,
           keys: index.key,
           size: index.size || 0,

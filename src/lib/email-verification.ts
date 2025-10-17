@@ -41,7 +41,7 @@ export class EmailVerificationService {
         return
       }
 
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: emailConfig.host,
         port: emailConfig.port || 587,
         secure: emailConfig.port === 465,
@@ -98,10 +98,10 @@ export class EmailVerificationService {
       }) as EmailVerificationToken
 
       return decoded
-    } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
+    } catch (error: any) {
+      if (error.name === 'TokenExpiredError') {
         throw new Error('Verification token has expired')
-      } else if (error instanceof jwt.JsonWebTokenError) {
+      } else if (error.name === 'JsonWebTokenError') {
         throw new Error('Invalid verification token')
       }
       throw error
@@ -147,10 +147,11 @@ export class EmailVerificationService {
 
       return true
     } catch (error) {
+      const err = error as Error
       logger.error('Failed to send verification email', {
         userId,
         email,
-        error: error.message,
+        error: err.message,
         type,
       })
       return false
@@ -194,10 +195,11 @@ export class EmailVerificationService {
 
       return true
     } catch (error) {
+      const err = error as Error
       logger.error('Failed to send password reset email', {
         userId,
         email,
-        error: error.message,
+        error: err.message,
       })
       return false
     }
@@ -242,14 +244,15 @@ export class EmailVerificationService {
 
       return { success: true, message: 'Email verified successfully', userId: user._id.toString() }
     } catch (error) {
+      const err = error as Error
       logger.error('Email verification failed', {
         token,
-        error: error.message,
+        error: err.message,
       })
 
-      if (error.message.includes('expired')) {
+      if (err.message.includes('expired')) {
         return { success: false, message: 'Verification link has expired. Please request a new one.' }
-      } else if (error.message.includes('Invalid')) {
+      } else if (err.message.includes('Invalid')) {
         return { success: false, message: 'Invalid verification link.' }
       }
 
@@ -297,9 +300,10 @@ export class EmailVerificationService {
         return { success: false, message: 'Failed to send verification email. Please try again later.' }
       }
     } catch (error) {
+      const err = error as Error
       logger.error('Failed to resend verification email', {
         email,
-        error: error.message,
+        error: err.message,
       })
       return { success: false, message: 'Failed to send verification email. Please try again later.' }
     }

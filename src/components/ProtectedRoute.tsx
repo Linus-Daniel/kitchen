@@ -12,11 +12,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const loading = status === 'loading';
   const user = session?.user;
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
+  // useEffect(() => {
+  //   if (!loading && !user) {
+  //     router.push('/login');
+  //   }
+  // }, [user, loading, router]);
 
   if (loading || !user) {
     return (

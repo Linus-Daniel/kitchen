@@ -8,7 +8,7 @@ import StoreGrid from "@/components/storeGrid";
 import CartSidebar from "@/components/CartBar";
 import SearchBar from "@/components/searchBar";
 import { LuShoppingCart, LuFilter, LuX } from "react-icons/lu";
-import { useCart } from "@/hooks/useCart";
+import { useCartStore } from "@/stores/cartStore";
 import { ServerProduct } from "@/lib/server-actions";
 
 interface FilterOptions {
@@ -49,7 +49,7 @@ const StorePageClient = ({
   const [selectedCategory, setSelectedCategory] = useState<string>(initialFilters.category || "all");
   const [searchQuery, setSearchQuery] = useState<string>(initialFilters.search || "");
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const { cartCount } = useCart();
+  const { cartCount } = useCartStore();
   
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     priceRange: [
@@ -141,20 +141,20 @@ const StorePageClient = ({
   }, [searchQuery, selectedCategory, filterOptions, availableFilters]);
 
   // Debounced filter updates
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      updateURL({
-        category: selectedCategory,
-        search: searchQuery,
-        minPrice: filterOptions.priceRange[0] > availableFilters.priceRange.minPrice ? filterOptions.priceRange[0] : undefined,
-        maxPrice: filterOptions.priceRange[1] < availableFilters.priceRange.maxPrice ? filterOptions.priceRange[1] : undefined,
-        rating: filterOptions.rating > 0 ? filterOptions.rating : undefined,
-        dietary: filterOptions.dietary,
-      });
-    }, 500);
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     updateURL({
+  //       category: selectedCategory,
+  //       search: searchQuery,
+  //       minPrice: filterOptions.priceRange[0] > availableFilters.priceRange.minPrice ? filterOptions.priceRange[0] : undefined,
+  //       maxPrice: filterOptions.priceRange[1] < availableFilters.priceRange.maxPrice ? filterOptions.priceRange[1] : undefined,
+  //       rating: filterOptions.rating > 0 ? filterOptions.rating : undefined,
+  //       dietary: filterOptions.dietary,
+  //     });
+  //   }, 500);
 
-    return () => clearTimeout(timeoutId);
-  }, [filterOptions, selectedCategory, searchQuery, availableFilters, updateURL]);
+  //   return () => clearTimeout(timeoutId);
+  // }, [filterOptions, selectedCategory, searchQuery, availableFilters, updateURL]);
 
   if (error) {
     return (

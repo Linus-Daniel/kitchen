@@ -36,7 +36,7 @@ interface FormData {
 }
 
 export default function UserProfile({ onUpdateSuccess, onUpdateError }: UserProfileProps) {
-  const { user, updateUser, loading } = useAuth();
+  const { user, updateProfile, loading } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +105,7 @@ export default function UserProfile({ onUpdateSuccess, onUpdateError }: UserProf
         preferences: formData.preferences,
       };
 
-      await updateUser(updateData);
+      await updateProfile(updateData);
       setSuccess('Profile updated successfully!');
       setEditing(false);
       onUpdateSuccess?.();

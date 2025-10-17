@@ -78,13 +78,15 @@ export async function getProducts(filters?: ProductFilters): Promise<{
       query.dietary = { $in: filters.dietary };
     }
     
-    // Get products with vendor information
-    const products = await Product.find(query)
-      .populate('vendor', 'businessName rating logo estimatedDeliveryTime')
-      .sort({ salesCount: -1, createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+  
+    const products = await Product.find({isAvailable:true})
+    //   .populate('vendor', 'businessName rating logo estimatedDeliveryTime')
+    //   .sort({ salesCount: -1, createdAt: -1 })
+    //   .skip(skip)
+    //   .limit(limit)
+    //   .lean();
+
+      console.log(products)
     
     const total = await Product.countDocuments(query);
     
@@ -102,7 +104,7 @@ export async function getProducts(filters?: ProductFilters): Promise<{
       count: products.length,
       filters: {
         categories,
-        priceRange: priceRange[0] || { minPrice: 0, maxPrice: 100 },
+        priceRange: priceRange[0] || { minPrice: 0, maxPrice: 10000 },
       },
     };
   } catch (error) {

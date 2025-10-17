@@ -138,7 +138,7 @@ export default function VendorNewProductPage() {
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        vendor: user._id,
+        vendor: user.id,
         vendorName: user.businessName || user.name,
         ingredients: formData.ingredients.filter(ing => ing.trim() !== ""),
         options: formData.options.filter(opt => 

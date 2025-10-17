@@ -1,5 +1,5 @@
 "use client"
-import { useCart } from '@/hooks/useCart';
+import { useCartStore } from '@/stores/cartStore';
 import { CartItem, Product } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiMinus, FiPlus } from 'react-icons/fi';
@@ -14,7 +14,7 @@ type Props = {
 
 const CartSidebar = ({ isOpen, onClose }:Props) => {
 
-  const {cartItems,addToCart,updateQuantity,removeFromCart} = useCart()
+  const { items: cartItems, addItem, updateQuantity, removeItem } = useCartStore()
   const subtotal = cartItems.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
@@ -105,7 +105,7 @@ const CartSidebar = ({ isOpen, onClose }:Props) => {
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                         <button 
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeItem(item.id)}
                           className="text-red-500 hover:text-red-700 text-sm"
                         >
                           Remove

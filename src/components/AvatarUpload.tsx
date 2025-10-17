@@ -17,7 +17,7 @@ export default function AvatarUpload({
   size = 'md',
   editable = true 
 }: AvatarUploadProps) {
-  const { user, updateUser } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +86,7 @@ export default function AvatarUpload({
       }
 
       // Update user context
-      await updateUser({ avatar: data.data.avatar });
+      await updateProfile({ avatar: data.data.avatar });
       
       onUploadSuccess?.(data.data.avatar);
       setPreview(null);

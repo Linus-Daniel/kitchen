@@ -20,8 +20,8 @@ const searchSchema = z.object({
   availability: z.string().transform(val => val === 'true').optional(),
   sortBy: z.enum(['relevance', 'name', 'price', 'rating', 'createdAt']).default('relevance'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
-  page: z.string().transform(Number).pipe(z.number().int().min(1)).default('1'),
-  limit: z.string().transform(Number).pipe(z.number().int().min(1).max(50)).default('10'),
+  page: z.string().transform(Number).pipe(z.number().int().min(1)).default(1),
+  limit: z.string().transform(Number).pipe(z.number().int().min(1).max(50)).default(10),
 });
 
 export async function GET(req: NextRequest) {
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       page,
       limit,
       filters: { category, minPrice, maxPrice, rating, availability },
-      ip: req.ip,
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
     });
 
     const results: any = {};
@@ -159,9 +159,10 @@ export async function GET(req: NextRequest) {
       } : undefined,
     });
   } catch (error) {
+    const err = error as Error
     logger.error('Search API error', {
-      error: error.message,
-      stack: error.stack,
+      error: err.message,
+      stack: err.stack,
       searchParams: req.nextUrl.searchParams.toString(),
     });
 
@@ -169,7 +170,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         success: false,
         error: 'Invalid search parameters',
-        details: error.errors,
+        details: error.issues,
       }, { status: 400 });
     }
 

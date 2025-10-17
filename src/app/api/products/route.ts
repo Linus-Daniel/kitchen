@@ -9,72 +9,67 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
 
-    // DEBUG: Log all search params
-    console.log("=== SEARCH PARAMS ===");
-    searchParams.forEach((value, key) => {
-      console.log(`${key}: "${value}" (type: ${typeof value})`);
-    });
+    // // DEBUG: Log all search params
+    // console.log("=== SEARCH PARAMS ===");
+    // searchParams.forEach((value, key) => {
+    //   console.log(`${key}: "${value}" (type: ${typeof value})`);
+    // });
 
-    const vendor = searchParams.get("vendor");
-    const category = searchParams.get("category");
-    const search = searchParams.get("search");
-    const minPrice = parseFloat(searchParams.get("minPrice") || "0");
-    const maxPrice = parseFloat(searchParams.get("maxPrice") || "999999");
-    const minRating = parseFloat(searchParams.get("minRating") || "0");
-    const sortBy = searchParams.get("sortBy") || "createdAt";
-    const sortOrder = searchParams.get("sortOrder") || "desc";
-    const page = parseInt(searchParams.get("page") || "1") || 1;
-    const limit = parseInt(searchParams.get("limit") || "12") || 12;
+    // const vendor = searchParams.get("vendor");
+    // const category = searchParams.get("category");
+    // const search = searchParams.get("search");
+    // const minPrice = parseFloat(searchParams.get("minPrice") || "0");
+    // const maxPrice = parseFloat(searchParams.get("maxPrice") || "999999");
+    // const minRating = parseFloat(searchParams.get("minRating") || "0");
+    // const sortBy = searchParams.get("sortBy") || "createdAt";
+    // const sortOrder = searchParams.get("sortOrder") || "desc";
+    // const page = parseInt(searchParams.get("page") || "1") || 1;
+    // const limit = parseInt(searchParams.get("limit") || "12") || 12;
 
-    let query: any = { isAvailable: true };
+    // let query: any = { isAvailable: true };
 
-    // DEBUG: Log each condition
-    console.log("vendor:", vendor, "| truthy:", !!vendor);
-    if (vendor) {
-      console.log("Adding vendor to query:", vendor);
-      query.vendor = vendor;
-    }
+    // // DEBUG: Log each condition
+    // console.log("vendor:", vendor, "| truthy:", !!vendor);
+    // if (vendor) {
+    //   console.log("Adding vendor to query:", vendor);
+    //   query.vendor = vendor;
+    // }
 
-    console.log("category:", category, "| truthy:", !!category);
-    if (category) {
-      console.log("Adding category to query:", category);
-      query.category = category;
-    }
+    // console.log("category:", category, "| truthy:", !!category);
+    // if (category) {
+    //   console.log("Adding category to query:", category);
+    //   query.category = category;
+    // }
 
-    if (search) {
-      console.log("Adding search to query:", search);
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { category: { $regex: search, $options: "i" } },
-      ];
-    }
+    // if (search) {
+    //   console.log("Adding search to query:", search);
+    //   query.$or = [
+    //     { name: { $regex: search, $options: "i" } },
+    //     { description: { $regex: search, $options: "i" } },
+    //     { category: { $regex: search, $options: "i" } },
+    //   ];
+    // }
 
-    if (minPrice > 0 || maxPrice < 999999) {
-      console.log("Adding price filter:", minPrice, "-", maxPrice);
-      query.price = { $gte: minPrice, $lte: maxPrice };
-    }
+    // if (minPrice > 0 || maxPrice < 999999) {
+    //   console.log("Adding price filter:", minPrice, "-", maxPrice);
+    //   query.price = { $gte: minPrice, $lte: maxPrice };
+    // }
 
-    if (minRating > 0) {
-      console.log("Adding rating filter:", minRating);
-      query.rating = { $gte: minRating };
-    }
+    // if (minRating > 0) {
+    //   console.log("Adding rating filter:", minRating);
+    //   query.rating = { $gte: minRating };
+    // }
 
-    console.log("=== FINAL QUERY ===");
-    console.log(JSON.stringify(query, null, 2));
+    // console.log("=== FINAL QUERY ===");
+    // console.log(JSON.stringify(query, null, 2));
 
-    const sortObj: any = {};
-    sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
+    // const sortObj: any = {};
+    // sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-    const products = await Product.find(query)
-      .populate("vendor", "businessName rating logo estimatedDeliveryTime")
-      .limit(limit)
-      .skip((page - 1) * limit)
-      .sort(sortObj);
+    const products = await Product.find()
+     
 
-    console.log("Products found:", products.length);
-
-    const total = await Product.countDocuments(query);
+    const total = await Product.countDocuments();
 
     const categories = await Product.distinct("category", {
       isAvailable: true,

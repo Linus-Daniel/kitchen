@@ -215,7 +215,7 @@ export const bulkProductOperationSchema = z.object({
     .min(1, 'At least one product ID is required')
     .max(100, 'Cannot operate on more than 100 products at once'),
   operation: z.enum(['delete', 'activate', 'deactivate', 'updateCategory', 'updatePrice']),
-  data: z.record(z.any()).optional(), // Additional data based on operation
+  data: z.record(z.string(), z.any()).optional(), // Additional data based on operation
 })
 
 // Type exports

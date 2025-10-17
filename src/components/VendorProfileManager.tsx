@@ -11,7 +11,7 @@ interface VendorProfileProps {
 }
 
 export default function VendorProfileManager({ onUpdateSuccess, onUpdateError }: VendorProfileProps) {
-  const { user, updateUser, loading } = useAuth();
+  const { user, updateProfile, loading } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +87,7 @@ export default function VendorProfileManager({ onUpdateSuccess, onUpdateError }:
     setSuccess(null);
 
     try {
-      await updateUser(formData);
+      await updateProfile(formData);
       setSuccess('Profile updated successfully!');
       setEditing(false);
       onUpdateSuccess?.();

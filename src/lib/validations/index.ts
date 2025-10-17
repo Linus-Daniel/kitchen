@@ -57,7 +57,7 @@ export const searchSchema = z.object({
     .string()
     .max(100, 'Search query must not exceed 100 characters')
     .optional(),
-  filters: z.record(z.any()).optional(),
+  filters: z.record(z.string(), z.any()).optional(),
   ...paginationSchema.shape,
 })
 
@@ -137,7 +137,7 @@ export async function validateRequest<T>(
     if (error instanceof z.ZodError) {
       const errors: Record<string, string[]> = {}
       
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const path = err.path.join('.')
         if (!errors[path]) {
           errors[path] = []

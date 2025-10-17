@@ -4,7 +4,7 @@ import { FiX, FiStar, FiClock, FiPlus, FiMinus, FiHeart } from "react-icons/fi";
 import { AddToCart, Option } from "@/types";
 import { Product } from "@/hooks/useProducts";
 import { useState } from "react";
-import { useCart } from "@/hooks/useCart";
+import { useCartStore } from "@/stores/cartStore";
 
 type Props = {
   product: Product;
@@ -15,7 +15,7 @@ type Props = {
 const ProductModal = ({ product, isOpen, onClose }: Props) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-  const { addToCart } = useCart();
+  const { addItem } = useCartStore();
 
   const handleAddToCart = () => {
     // Convert new Product interface to old Product interface for cart
@@ -24,7 +24,7 @@ const ProductModal = ({ product, isOpen, onClose }: Props) => {
       id: product._id, // Add id field for cart compatibility
     };
     
-    addToCart(
+    addItem(
       cartProduct as any,
       quantity,
       selectedOption

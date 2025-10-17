@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     const user = await protect(req);
+    console.log(user)
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1") || 1;
     const limit = parseInt(searchParams.get("limit") || "20") || 20;

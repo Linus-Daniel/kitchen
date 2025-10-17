@@ -13,7 +13,7 @@ const VendorLoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { vendorLogin } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -22,7 +22,7 @@ const VendorLoginPage = () => {
     setError("");
 
     try {
-      await login(email, password, true); // true indicates vendor login
+      vendorLogin({ email, password });
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
       setIsLoading(false);

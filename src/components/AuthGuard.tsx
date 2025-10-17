@@ -29,7 +29,7 @@ export default function AuthGuard({
         return;
       }
 
-      if (!allowedRoles.includes(user.role)) {
+      if (!allowedRoles.includes(user.role as 'user' | 'admin' | 'vendor')) {
         // Redirect based on user role
         switch (user.role) {
           case 'admin':
