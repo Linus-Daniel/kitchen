@@ -6,7 +6,14 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'react-hot-toast'
 import { queryClient } from '@/lib/queryClient'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { useCartSync } from '@/hooks/useCartSync'
 import { ReactNode } from 'react'
+
+// Component to handle cart synchronization
+function CartSync() {
+  useCartSync()
+  return null
+}
 
 interface ProvidersProps {
   children: ReactNode
@@ -18,6 +25,7 @@ export function Providers({ children, session }: ProvidersProps) {
     <ErrorBoundary>
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
+          <CartSync />
           {children}
           <Toaster
             position="top-right"

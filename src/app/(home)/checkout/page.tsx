@@ -21,13 +21,13 @@ interface ShippingAddress {
 }
 
 const CheckoutPage = () => {
-  const { 
-    items: cartItems, 
-    cartCount, 
-    removeItem: removeFromCart, 
-    updateQuantity, 
-    clearCart, 
-    isLoading: cartLoading 
+  const {
+    items: cartItems,
+    cartCount,
+    removeItem: removeFromCart,
+    updateQuantity,
+    clearCart,
+    isLoading: cartLoading,
   } = useCartStore();
   const { user, loading: authLoading } = useAuth();
   const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('delivery');
@@ -36,6 +36,8 @@ const CheckoutPage = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [error, setError] = useState('');
   const [orderId, setOrderId] = useState('');
+
+  console.log(cartItems, cartCount)
   
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     street: '',
@@ -141,7 +143,7 @@ const CheckoutPage = () => {
                 }
                 
                 // Order and payment successful - cart is cleared in verify endpoint
-                clearCart(); // Update frontend cart state
+                await clearCart(); // Update frontend cart state
                 showToast.success('Payment successful! Your order has been placed.');
                 setOrderSuccess(true);
               } catch (verifyError) {

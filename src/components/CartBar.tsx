@@ -83,7 +83,7 @@ const CartSidebar = ({ isOpen, onClose }:Props) => {
                         
                         <div className="flex items-center mt-2">
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={async () => await updateQuantity(item.id, item.quantity - 1)}
                             className="p-1 text-gray-500 hover:text-amber-600"
                           >
                             <FiMinus size={14} />
@@ -92,7 +92,7 @@ const CartSidebar = ({ isOpen, onClose }:Props) => {
                           <span className="mx-2 w-6 text-center">{item.quantity}</span>
                           
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={async () => await updateQuantity(item.id, item.quantity + 1)}
                             className="p-1 text-gray-500 hover:text-amber-600"
                           >
                             <FiPlus size={14} />
@@ -105,7 +105,7 @@ const CartSidebar = ({ isOpen, onClose }:Props) => {
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                         <button 
-                          onClick={() => removeItem(item.id)}
+                          onClick={async () => await removeItem(item.id)}
                           className="text-red-500 hover:text-red-700 text-sm"
                         >
                           Remove

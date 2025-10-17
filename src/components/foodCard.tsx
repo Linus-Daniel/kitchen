@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FiPlus, FiStar, FiClock } from "react-icons/fi";
 import FavoriteButton from "./favouriteButton";
 import { Product } from "@/hooks/useProducts";
+import { useCartStore } from "@/stores/cartStore";
 
 type Props = {
   product: Product;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const ProductCard = ({ product, onSelect, showFavorite = true }: Props) => {
+
   return (
     <motion.div
       className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden border border-gray-100"

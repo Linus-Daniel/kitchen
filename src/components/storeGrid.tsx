@@ -24,7 +24,6 @@ type Props = {
 };
 
 const StoreGrid = ({
-  addToCart,
   showFavorites = true,
   selectedCategory,
   searchQuery,

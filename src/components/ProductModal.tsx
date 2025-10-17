@@ -17,14 +17,13 @@ const ProductModal = ({ product, isOpen, onClose }: Props) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const { addItem } = useCartStore();
 
-  const handleAddToCart = () => {
-    // Convert new Product interface to old Product interface for cart
+  const handleAddToCart = async () => {
     const cartProduct = {
       ...product,
-      id: product._id, // Add id field for cart compatibility
+      id: product._id,
     };
     
-    addItem(
+    await addItem(
       cartProduct as any,
       quantity,
       selectedOption
