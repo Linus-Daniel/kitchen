@@ -118,8 +118,69 @@ export const createProductSchema = z.object({
 })
 
 // Product update schema (all fields optional except ID)
-export const updateProductSchema = createProductSchema.partial().extend({
+export const updateProductSchema = z.object({
   id: z.string().min(1, 'Product ID is required'),
+  name: z
+    .string()
+    .min(2, 'Product name must be at least 2 characters')
+    .max(100, 'Product name must not exceed 100 characters')
+    .transform(name => name.trim())
+    .optional(),
+  description: z
+    .string()
+    .min(10, 'Product description must be at least 10 characters')
+    .max(1000, 'Product description must not exceed 1,000 characters')
+    .transform(desc => desc.trim())
+    .optional(),
+  price: z
+    .number()
+    .min(0.01, 'Price must be at least $0.01')
+    .max(10000, 'Price cannot exceed $10,000')
+    .transform(price => Math.round(price * 100) / 100)
+    .optional(),
+  category: productCategorySchema.optional(),
+  cookTime: z
+    .string()
+    .regex(/^\d+\s*(min|mins|minutes|hour|hours|hr|hrs)$/i, 'Cook time must be in format like "30 mins" or "1 hour"')
+    .max(50, 'Cook time must not exceed 50 characters')
+    .optional(),
+  ingredients: z
+    .array(z.string().min(1, 'Ingredient cannot be empty').max(100, 'Ingredient must not exceed 100 characters'))
+    .min(1, 'At least one ingredient is required')
+    .max(50, 'Cannot have more than 50 ingredients')
+    .optional(),
+  dietary: z
+    .array(dietaryRestrictionSchema)
+    .max(10, 'Cannot have more than 10 dietary restrictions')
+    .optional(),
+  options: z
+    .array(productOptionSchema)
+    .max(20, 'Cannot have more than 20 options')
+    .optional(),
+  image: z
+    .string()
+    .url('Image must be a valid URL')
+    .optional(),
+  images: z
+    .array(z.string().url('Each image must be a valid URL'))
+    .max(10, 'Cannot have more than 10 images')
+    .optional(),
+  isAvailable: z.boolean().optional(),
+  rating: z
+    .number()
+    .min(0, 'Rating cannot be negative')
+    .max(5, 'Rating cannot exceed 5')
+    .optional(),
+  stock: z
+    .number()
+    .int('Stock must be a whole number')
+    .min(0, 'Stock cannot be negative')
+    .max(10000, 'Stock cannot exceed 10,000')
+    .optional(),
+  tags: z
+    .array(z.string().min(1).max(30))
+    .max(20, 'Cannot have more than 20 tags')
+    .optional(),
 })
 
 // Product search/filter schema

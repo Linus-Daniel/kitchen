@@ -1,3 +1,6 @@
+// Force dynamic rendering for all account pages
+export const dynamic = 'force-dynamic'
+
 // components/Layout.jsx
 import AccountLayout from "@/components/AccountLayout";
 import { AccountSidebar } from "@/components/AccountSideBar";

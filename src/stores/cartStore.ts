@@ -384,7 +384,7 @@ export const useCartStore = create<CartState>()(
             // Optimistic update
             const originalItems = get().items
             const newItems = originalItems.filter(item => getItemKey(item) !== itemKey)
-            set((state) => ({
+            set(() => ({
               items: newItems,
               isDirty: true,
               ...recalculateCartTotals(newItems)
@@ -490,7 +490,7 @@ export const useCartStore = create<CartState>()(
                 ? { ...item, quantity: newQuantity }
                 : item
             )
-            set((state) => ({
+            set(() => ({
               items: newItems,
               isDirty: true,
               ...recalculateCartTotals(newItems)
@@ -563,11 +563,10 @@ export const useCartStore = create<CartState>()(
         },
         clearCart: async () => {
           const startTime = performanceTracker.startTimer('clearCart')
+          const originalItems = get().items
           
           try {
             set({ globalLoading: true, error: null })
-            
-            const originalItems = get().items
             
             // Optimistic update
             set({ 
@@ -612,12 +611,11 @@ export const useCartStore = create<CartState>()(
             
           } catch (error: any) {
             // Rollback
-            const items = originalItems
             set(() => ({
-              items,
+              items: originalItems,
               error: error.message || 'Failed to clear cart',
               isDirty: false,
-              ...recalculateCartTotals(items)
+              ...recalculateCartTotals(originalItems)
             }))
             
             showToast.error(error.message || 'Failed to clear cart')
@@ -745,6 +743,7 @@ export const useCartStore = create<CartState>()(
 
         updateMultipleItems: async (updates) => {
           const startTime = performanceTracker.startTimer('updateMultipleItems')
+          const originalItems = [...get().items]
           
           try {
             set({ globalLoading: true, error: null })
@@ -756,14 +755,12 @@ export const useCartStore = create<CartState>()(
               }
             }
             
-            const originalItems = [...get().items]
-            
             // Optimistic updates
             const newItems = get().items.map(item => {
               const update = updates.find(u => u.id === item.id)
               return update ? { ...item, quantity: update.quantity } : item
             })
-            set((state) => ({
+            set(() => ({
               items: newItems,
               isDirty: true,
               ...recalculateCartTotals(newItems)
@@ -812,7 +809,7 @@ export const useCartStore = create<CartState>()(
             
           } catch (error: any) {
             // Rollback all changes
-            set((state) => ({
+            set(() => ({
               items: originalItems,
               error: error.message || 'Failed to update items',
               isDirty: false,
@@ -845,7 +842,7 @@ export const useCartStore = create<CartState>()(
             
             set({ isDirty: false })
             showToast.success('Cart synced with server')
-            analytics.track('cart_synced')
+            analytics.track('cart_synced', {})
             
           } catch (error: any) {
             showToast.error('Failed to sync cart')

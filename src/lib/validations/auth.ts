@@ -51,7 +51,15 @@ export const registerSchema = z.object({
 })
 
 // Vendor registration schema
-export const vendorRegisterSchema = registerSchema.extend({
+export const vendorRegisterSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  password: passwordSchema,
+  confirmPassword: z.string(),
+  terms: z.boolean().refine(val => val === true, {
+    message: 'You must accept the terms and conditions',
+  }),
   businessName: z
     .string()
     .min(1, 'Business name is required')
@@ -67,6 +75,9 @@ export const vendorRegisterSchema = registerSchema.extend({
   businessCategory: z
     .string()
     .min(1, 'Business category is required'),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
 })
 
 // Login schema
