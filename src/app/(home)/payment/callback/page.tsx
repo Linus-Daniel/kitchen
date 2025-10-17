@@ -49,18 +49,47 @@ function PaymentCallbackContent() {
         setMessage('Payment verified successfully!');
         setOrderId(data.data.order._id);
         
-        // Redirect to success page after 3 seconds
-        setTimeout(() => {
-          router.push(`/account/orders`);
-        }, 3000);
+        // Post success message to parent window (for popup)
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'PAYMENT_SUCCESS',
+            reference: reference,
+            trans: data.data.transaction?.id,
+            transaction: data.data.transaction?.id,
+            message: 'Payment successful',
+            redirecturl: ''
+          }, window.location.origin);
+          window.close();
+        } else {
+          // Redirect to success page after 3 seconds if not in popup
+          setTimeout(() => {
+            router.push(`/account/orders`);
+          }, 3000);
+        }
       } else {
         setStatus('failed');
         setMessage(data.error || 'Payment verification failed');
+        
+        // Post failure message to parent window (for popup)
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'PAYMENT_CANCELLED'
+          }, window.location.origin);
+          window.close();
+        }
       }
     } catch (error) {
       console.error('Payment verification error:', error);
       setStatus('failed');
       setMessage('An error occurred while verifying payment');
+      
+      // Post failure message to parent window (for popup)
+      if (window.opener) {
+        window.opener.postMessage({
+          type: 'PAYMENT_CANCELLED'
+        }, window.location.origin);
+        window.close();
+      }
     }
   };
 

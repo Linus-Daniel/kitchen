@@ -5,8 +5,8 @@ import Payment from "@/models/Payment";
 import User from "@/models/User";
 import Cart from "@/models/Cart";
 import { protect, ErrorResponse, errorHandler } from "@/lib/errorHandler";
-import { emailService } from "@/lib/email";
 import { PaystackService } from "@/lib/paystack";
+import { notificationService } from "@/lib/notifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         email_address: user.email,
         payer_id: transactionData.customer?.id || "",
       };
-      order.orderStatus = "confirmed";
+      order.orderStatus = "Confirmed";
       await order.save();
 
       // Clear user's cart after successful payment
@@ -86,20 +86,74 @@ export async function POST(req: NextRequest) {
         { $set: { items: [], totalPrice: 0 } }
       );
 
-      // Send payment confirmation email
+      // Populate order with vendor details for notifications
+      await order.populate([
+        { path: 'vendorOrders.vendor', select: 'name email' },
+        { path: 'orderItems.product', select: 'name vendor' },
+        { path: 'user', select: 'name email' }
+      ]);
+
+      // Send comprehensive notifications
       try {
+        // 1. Payment received notifications (in-app and email)
+        await notificationService.sendPaymentReceivedNotification(order, {
+          paymentId: reference,
+          amount: transactionData.amount,
+          currency: transactionData.currency,
+          method: 'Paystack'
+        });
+
+        // 2. Order placed notifications (in-app and email)
+        await notificationService.sendOrderPlacedNotifications(order);
+
+        // 3. Send emails
         const userDetails = await User.findById(user._id);
         if (userDetails?.email) {
-          await emailService.sendPaymentConfirmation(userDetails.email, order, {
-            paymentId: reference,
-            method: 'Paystack',
-            amount: transactionData.amount / 100, // Convert from kobo to naira
-            currency: transactionData.currency,
-          });
+          // Send payment confirmation email
+          await notificationService.sendEmailNotification(
+            user._id.toString(),
+            'User',
+            'payment_received',
+            order,
+            {
+              paymentId: reference,
+              method: 'Paystack',
+              amount: transactionData.amount / 100,
+              currency: transactionData.currency,
+            }
+          );
+
+          // Send order confirmation email
+          await notificationService.sendEmailNotification(
+            user._id.toString(),
+            'User',
+            'order_placed',
+            order
+          );
         }
-      } catch (emailError) {
-        console.error('Failed to send payment confirmation email:', emailError);
-        // Don't fail the request if email fails
+
+        // 4. Send vendor emails
+        const vendorIds = [...new Set(order.vendorOrders.map((vendorOrder: any) => vendorOrder.vendor._id || vendorOrder.vendor))];
+        for (const vendorId of vendorIds) {
+          // Create a vendor-specific order object for the email
+          const vendorOrder = order.vendorOrders.find((vo: any) => (vo.vendor._id || vo.vendor).toString() === String(vendorId));
+          const vendorSpecificOrder = {
+            ...order.toObject(),
+            orderItems: vendorOrder?.items || [],
+            totalPrice: vendorOrder?.subtotal || 0
+          };
+          
+          await notificationService.sendEmailNotification(
+            String(vendorId),
+            'Vendor',
+            'order_placed',
+            vendorSpecificOrder
+          );
+        }
+
+      } catch (notificationError) {
+        console.error('Failed to send notifications:', notificationError);
+        // Don't fail the request if notifications fail
       }
 
       return NextResponse.json({

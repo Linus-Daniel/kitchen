@@ -66,16 +66,34 @@ export const NotificationPanel = ({ className = '' }: NotificationPanelProps) =>
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'order':
+      case 'order_placed':
         return '🛒';
-      case 'payment':
-        return '💳';
-      case 'delivery':
+      case 'order_confirmed':
+        return '✅';
+      case 'order_preparing':
+        return '👨‍🍳';
+      case 'order_ready':
+        return '🍽️';
+      case 'order_delivered':
         return '🚚';
-      case 'promotion':
+      case 'order_cancelled':
+        return '❌';
+      case 'payment_received':
+        return '💳';
+      case 'review_received':
+        return '⭐';
+      case 'product_approved':
+        return '✅';
+      case 'product_rejected':
+        return '❌';
+      case 'vendor_approved':
         return '🎉';
-      default:
+      case 'vendor_rejected':
+        return '❌';
+      case 'general':
         return '📢';
+      default:
+        return '🔔';
     }
   };
 
@@ -84,13 +102,33 @@ export const NotificationPanel = ({ className = '' }: NotificationPanelProps) =>
       {/* Notification Bell */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors group"
       >
-        <FiBell size={20} />
+        <motion.div
+          animate={unreadCount > 0 ? { rotate: [0, -10, 10, -10, 0] } : {}}
+          transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 3 }}
+        >
+          <FiBell size={20} />
+        </motion.div>
+        
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse"
+          >
             {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
+          </motion.span>
+        )}
+        
+        {/* Pulse ring for new notifications */}
+        {unreadCount > 0 && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0.8 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute inset-0 rounded-full bg-red-400 -z-10"
+          />
         )}
       </button>
 

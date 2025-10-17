@@ -37,30 +37,12 @@ declare global {
 }
 
 export class PaystackService {
-  private publicKey: string;
   private secretKey: string;
 
   constructor() {
-    this.publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';
     this.secretKey = process.env.PAYSTACK_SECRET_KEY || '';
   }
 
-  // Load Paystack script dynamically
-  private loadPaystackScript(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (window.PaystackPop) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://js.paystack.co/v1/inline.js';
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Failed to load Paystack script'));
-      document.head.appendChild(script);
-    });
-  }
 
   async initializePayment(config: {
     amount: number;
@@ -72,40 +54,90 @@ export class PaystackService {
     onCancel: () => void;
   }) {
     try {
-      await this.loadPaystackScript();
+      // Initialize transaction via internal API
+      const initResponse = await this.initializePaymentAPI({
+        email: config.email,
+        amount: config.amount,
+        orderId: config.orderId,
+        callback_url: `${window.location.origin}/payment/success`,
+        metadata: {
+          customerName: config.customerName,
+          customerPhone: config.customerPhone,
+        }
+      });
 
-      const paystackConfig: PaystackConfig = {
-        public_key: this.publicKey,
-        tx_ref: `order_${config.orderId}_${Date.now()}`,
-        amount: Math.round(config.amount * 100), // Convert to kobo (smallest currency unit)
-        currency: 'NGN',
-        customer: {
-          email: config.email,
-          phone_number: config.customerPhone,
-          name: config.customerName,
-        },
-        callback: (response: any) => {
-          if (response.status === 'success') {
-            config.onSuccess(response);
-          }
-        },
-        onClose: () => {
-          config.onCancel();
-        },
-        customizations: {
-          title: 'KitchenMode Payment',
-          description: `Payment for order #${config.orderId}`,
-          logo: '/logo.png',
-        },
-      };
+      if (!initResponse.success || !initResponse.data?.authorization_url) {
+        throw new Error('Failed to initialize payment');
+      }
 
-      const handler = window.PaystackPop.setup(paystackConfig);
-      handler.openIframe();
+      // Get the reference from the response
+      const reference = initResponse.data.reference;
+      
+      // Open checkout URL in new tab
+      const checkoutUrl = initResponse.data.authorization_url;
+      this.openPaymentTab(checkoutUrl, reference, config.onSuccess, config.onCancel);
+
     } catch (error) {
       console.error('Paystack initialization error:', error);
       throw error;
     }
   }
+
+  private openPaymentTab(
+    checkoutUrl: string, 
+    reference: string,
+    onSuccess: (response: PaystackResponse) => void,
+    onCancel: () => void
+  ): void {
+    // Store callbacks and reference in sessionStorage for retrieval after redirect
+    sessionStorage.setItem('paystack_payment_data', JSON.stringify({
+      reference,
+      timestamp: Date.now()
+    }));
+
+    // Store callbacks in a global object (will be available when user returns)
+    (window as any).paystackCallbacks = {
+      onSuccess,
+      onCancel
+    };
+
+    // Open checkout URL in new tab
+    window.open(checkoutUrl, '_blank');
+
+    // Listen for storage events (when user completes payment in other tab)
+    const storageListener = (event: StorageEvent) => {
+      if (event.key === 'paystack_payment_result') {
+        const result = JSON.parse(event.newValue || '{}');
+        
+        if (result.reference === reference) {
+          window.removeEventListener('storage', storageListener);
+          sessionStorage.removeItem('paystack_payment_result');
+          sessionStorage.removeItem('paystack_payment_data');
+          
+          if (result.success) {
+            onSuccess({
+              status: 'success',
+              reference: result.reference,
+              trans: result.transaction_id,
+              transaction: result.transaction_id,
+              message: 'Payment successful',
+              redirecturl: ''
+            });
+          } else {
+            onCancel();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('storage', storageListener);
+
+    // Cleanup listener after 10 minutes if no response
+    setTimeout(() => {
+      window.removeEventListener('storage', storageListener);
+    }, 10 * 60 * 1000);
+  }
+
 
   // Server-side payment verification
   async verifyPaymentServer(reference: string): Promise<any> {
@@ -148,7 +180,42 @@ export class PaystackService {
     return response.json();
   }
 
-  // Initialize payment transaction
+  // Initialize payment via internal API
+  async initializePaymentAPI(data: {
+    email: string;
+    amount: number;
+    orderId: string;
+    callback_url?: string;
+    metadata?: any;
+  }): Promise<any> {
+    try {
+      const response = await fetch('/api/payment/initialize-paystack', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          email: data.email,
+          amount: data.amount,
+          orderId: data.orderId,
+          callback_url: data.callback_url,
+          metadata: data.metadata,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Payment initialization failed: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Payment initialization error:', error);
+      throw error;
+    }
+  }
+
+  // Initialize payment transaction (legacy - direct Paystack API)
   async initializeTransaction(data: {
     email: string;
     amount: number;

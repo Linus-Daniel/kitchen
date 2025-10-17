@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useCartStore, CartItem } from '@/stores/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiCreditCard, FiHome, FiMapPin } from 'react-icons/fi';
+import { FiArrowLeft, FiCreditCard, FiMapPin } from 'react-icons/fi';
 import { paystackService } from '@/lib/paystack';
 import { apiClient } from '@/lib/api';
 import { LoadingSkeleton, CartItemSkeleton } from '@/components/ui/LoadingSkeleton';
@@ -24,8 +24,6 @@ const CheckoutPage = () => {
   const {
     items: cartItems,
     cartCount,
-    removeItem: removeFromCart,
-    updateQuantity,
     clearCart,
     isLoading: cartLoading,
   } = useCartStore();

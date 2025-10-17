@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { apiClient, PaginationParams } from '@/lib/api';
+import { io, Socket } from 'socket.io-client';
+import { useAuth } from '@/hooks/useAuth';
+import toast from 'react-hot-toast';
 
 export interface Notification {
   _id: string;
@@ -17,6 +20,7 @@ export interface Notification {
 }
 
 export const useNotifications = (filters?: PaginationParams & { isRead?: boolean; type?: string }) => {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +31,7 @@ export const useNotifications = (filters?: PaginationParams & { isRead?: boolean
     total: 0,
     count: 0,
   });
+  const socketRef = useRef<Socket | null>(null);
 
   const fetchNotifications = async (newFilters?: PaginationParams & { isRead?: boolean; type?: string }) => {
     setLoading(true);
@@ -133,6 +138,69 @@ export const useNotifications = (filters?: PaginationParams & { isRead?: boolean
     const updatedFilters = { ...filters, ...newFilters, page: 1 };
     fetchNotifications(updatedFilters);
   };
+
+  // Initialize Socket.IO connection for real-time notifications
+  useEffect(() => {
+    if (!user) return;
+
+    // Connect to Socket.IO server
+    socketRef.current = io(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000', {
+      path: '/api/socket',
+      transports: ['websocket', 'polling']
+    });
+
+    const socket = socketRef.current;
+
+    // Join appropriate room based on user role
+    if (user.role === 'vendor') {
+      socket.emit('join-vendor-room', user.id);
+    } else {
+      socket.emit('join-user-room', user.id);
+    }
+
+    // Listen for new notifications
+    socket.on('new-notification', (notification: Notification) => {
+      setNotifications(prev => [notification, ...prev]);
+      
+      // Show toast notification
+      toast.success(notification.title, {
+        duration: 5000,
+        icon: '🔔',
+      });
+    });
+
+    // Listen for notification count updates
+    socket.on('notification-count-update', (data: { unreadCount: number }) => {
+      setUnreadCount(data.unreadCount);
+    });
+
+    // Listen for specific order events
+    socket.on('new-order', (data: any) => {
+      toast.success('New Order Received!', {
+        duration: 6000,
+        icon: '🛒',
+      });
+    });
+
+    socket.on('order-update', (data: any) => {
+      toast.success('Order Status Updated', {
+        duration: 4000,
+        icon: '📋',
+      });
+    });
+
+    socket.on('payment-confirmed', (data: any) => {
+      toast.success('Payment Confirmed!', {
+        duration: 5000,
+        icon: '💳',
+      });
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, [user]);
 
   useEffect(() => {
     fetchNotifications();

@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/authStore'
 import { apiClient, RegisterData, VendorRegisterData } from '@/lib/api'
@@ -49,7 +49,7 @@ export function useAuth() {
 
       return result
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       showToast.success('Login successful! Welcome back.')
       setError(null)
     },
