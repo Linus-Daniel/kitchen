@@ -115,6 +115,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Persist user data to the token on sign in
       if (user) {
         token.role = user.role
         token.phone = user.phone
@@ -132,9 +133,10 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
+      // Send properties to the client, they will be available in the session object
       if (token && session.user) {
         session.user.id = token.sub!
-        session.user.role = token.role as string
+        session.user.role = (token.role as string) || 'user'
         session.user.phone = token.phone as string
         session.user.avatar = token.avatar as string
         session.user.businessName = token.businessName as string

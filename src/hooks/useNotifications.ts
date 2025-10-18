@@ -39,16 +39,19 @@ export const useNotifications = (filters?: PaginationParams & { isRead?: boolean
     
     try {
       const filterParams = { ...filters, ...newFilters };
-      const response = await apiClient.getNotifications(filterParams);
-      
-      setNotifications(response.data || []);
-      setUnreadCount(response.unreadCount || 0);
-      setPagination({
-        page: filterParams.page || 1,
-        limit: filterParams.limit || 20,
-        total: response.total || 0,
-        count: response.count || 0,
-      });
+      if (user?.role ==="user"){
+
+        const response = await apiClient.getNotifications(filterParams);
+        
+        setNotifications(response.data || []);
+        setUnreadCount(response.unreadCount || 0);
+        setPagination({
+          page: filterParams.page || 1,
+          limit: filterParams.limit || 20,
+          total: response.total || 0,
+          count: response.count || 0,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to fetch notifications');
     } finally {

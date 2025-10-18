@@ -14,7 +14,7 @@ export function useCartSync() {
   useEffect(() => {
     if (status === 'loading') return // Still loading
 
-    if (session?.user) {
+    if (session?.user.role==="user") {
       // User is logged in - load cart from server
       loadCart()
     } else {

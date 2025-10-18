@@ -22,7 +22,6 @@ export default function VendorLayout({
       <body className="antialiased">
         <Providers>
           <div className="flex min-h-screen bg-gray-50">
-            {/* Vendor Sidebar */}
             <aside className="hidden md:block fixed inset-y-0 left-0 z-30 w-64 border-r bg-white">
               <VendorSidebar />
             </aside>
@@ -36,7 +35,9 @@ export default function VendorLayout({
 
               {/* Page Content with Animation */}
               <main className="flex-1 overflow-y-auto">
-                <VendorLayoutClient>{children}</VendorLayoutClient>
+
+                <VendorLayoutClient>
+                  {children}</VendorLayoutClient>
               </main>
             </div>
           </div>

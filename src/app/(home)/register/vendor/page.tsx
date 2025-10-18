@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/select";
 import { FiAlertCircle } from 'react-icons/fi';
 import { Store } from 'lucide-react';
-import { VendorRegisterData } from '@/lib/api';
+import apiClient, { VendorRegisterData } from '@/lib/api';
+import { toast } from 'react-hot-toast';
 
 export default function VendorRegistrationPage() {
   const [step, setStep] = useState(1);
@@ -107,7 +108,7 @@ export default function VendorRegistrationPage() {
         cuisineType: [formData.cuisineType]
       };
 
-      await register(vendorData as any,); // true indicates vendor registration
+      await apiClient.vendorRegister(vendorData as any,); // true indicates vendor registration
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
       setIsLoading(false);

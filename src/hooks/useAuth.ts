@@ -19,7 +19,6 @@ export function useAuth() {
   const queryClient = useQueryClient()
   const { setUser, setLoading, setError, clearAuth } = useAuthStore()
 
-  // Sync session with Zustand store
   useEffect(() => {
     if (status === 'loading') {
       setLoading(true)
@@ -27,11 +26,17 @@ export function useAuth() {
       setLoading(false)
       if (session?.user) {
         setUser(session.user as any)
+        
+        // Additional check for vendor role consistency
+        if (window.location.pathname.startsWith('/vendor') && session.user.role !== 'vendor') {
+          console.warn('User role mismatch: expected vendor, got', session.user.role)
+          router.push('/vendor/login')
+        }
       } else {
         clearAuth()
       }
     }
-  }, [session, status, setUser, setLoading, clearAuth])
+  }, [session, status, setUser, setLoading, clearAuth, router])
 
   // Login mutation
   const loginMutation = useMutation({

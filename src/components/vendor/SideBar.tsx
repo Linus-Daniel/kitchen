@@ -14,6 +14,10 @@ import {
   Star,
   Users,
   LayoutDashboard,
+  Calendar,
+  Wallet,
+  BarChart3,
+  RefreshCw,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,14 +44,29 @@ const vendorNavItems: NavItem[] = [
     icon: ShoppingCart,
   },
   {
+    title: "Scheduling",
+    href: "/vendor/scheduling",
+    icon: Calendar,
+  },
+  {
     title: "Analytics",
     href: "/vendor/analytics",
     icon: ChartArea,
   },
   {
-    title: "Withdraw",
-    href: "/vendor/withdraw",
-    icon: DollarSign,
+    title: "Advanced Analytics",
+    href: "/vendor/advanced-analytics",
+    icon: BarChart3,
+  },
+  {
+    title: "Wallet",
+    href: "/vendor/wallet",
+    icon: Wallet,
+  },
+  {
+    title: "Refunds",
+    href: "/vendor/refunds",
+    icon: RefreshCw,
   },
   {
     title: "Customers",

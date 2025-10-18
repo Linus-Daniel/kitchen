@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaStore } from "react-icons/fa";
 import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+import { toast } from "react-hot-toast";
 
 const VendorLoginPage = () => {
   const [email, setEmail] = useState("");
@@ -154,23 +155,38 @@ const VendorLoginPage = () => {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Don't have a vendor account?{" "}
-            <Link
-              href="/vendor/register"
-              className="font-medium text-orange-600 hover:text-orange-500"
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-orange-800 font-medium mb-2">
+              New to our platform? 
+            </p>
+            <button
+              onClick={() => {
+                toast.success('Redirecting to vendor registration...');
+                router.push('/vendor/register');
+              }}
+              className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm"
             >
-              Register your restaurant
-            </Link>
+              🏪 Register Your Restaurant Now
+            </button>
+          </div>
+          
+          <p className="text-sm text-gray-600">
+            Already have a vendor account?{" "}
+            <span className="font-medium text-gray-800">
+              Sign in above
+            </span>
           </p>
           <p className="text-sm text-gray-500 mt-2">
             Customer login?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-gray-600 hover:text-gray-700"
+            <button
+              onClick={() => {
+                toast('Redirecting to customer login...', { icon: '👤' });
+                router.push('/login');
+              }}
+              className="font-medium text-orange-600 hover:text-orange-500 underline"
             >
-              Go to customer login
-            </Link>
+              Click here
+            </button>
           </p>
         </div>
       </motion.div>
