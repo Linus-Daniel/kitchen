@@ -26,12 +26,14 @@ import { FiAlertCircle } from 'react-icons/fi';
 import { Store } from 'lucide-react';
 import apiClient, { VendorRegisterData } from '@/lib/api';
 import { toast } from 'react-hot-toast';
+import { useRouter } from "next/navigation";
 
 export default function VendorRegistrationPage() {
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
+  const router =  useRouter();
 
   const [formData, setFormData] = useState({
     businessName: '',
@@ -108,7 +110,10 @@ export default function VendorRegistrationPage() {
         cuisineType: [formData.cuisineType]
       };
 
-      await apiClient.vendorRegister(vendorData as any,); // true indicates vendor registration
+      const response = await apiClient.vendorRegister(vendorData as any,); // true indicates vendor registration
+      console.log(response);
+      router.replace("/login/vendor")
+      
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
       setIsLoading(false);
@@ -381,7 +386,7 @@ export default function VendorRegistrationPage() {
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link href="/vendor/login" className="font-medium text-orange-600 hover:text-orange-500">
+                <Link href="/login/vendor" className="font-medium text-orange-600 hover:text-orange-500">
                   Sign in to your dashboard
                 </Link>
               </p>

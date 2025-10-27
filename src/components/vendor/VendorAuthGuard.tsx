@@ -26,7 +26,7 @@ export function VendorAuthGuard({ children }: VendorAuthGuardProps) {
     if (!session) {
       // No session, show toast and redirect to vendor login
       toast.error('Please log in to access your vendor dashboard');
-      router.replace('/vendor/login');
+      router.replace('/login/vendor');
       return;
     }
 

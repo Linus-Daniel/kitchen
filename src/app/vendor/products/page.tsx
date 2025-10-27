@@ -34,11 +34,11 @@ export default function VendorProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   const categories = [
     "appetizers", "main-course", "desserts", "beverages", "salads",
-    "pizza", "burgers", "pasta", "seafood", "vegetarian", "vegan"
+    "pizza", "burgers", "pasta", "seafood","all", "vegetarian", "vegan"
   ];
 
   useEffect(() => {
@@ -143,7 +143,7 @@ export default function VendorProductsPage() {
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All categories</SelectItem>
+                <SelectItem value="all">All categories</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category.charAt(0).toUpperCase() + category.slice(1)}
