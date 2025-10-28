@@ -44,10 +44,12 @@ import {
     Search,
     Settings,
     Share2,
+    Shield,
     ShoppingCart,
     Sliders,
     Smile,
     Star,
+    Store,
     Sun,
     Trash2,
     Truck,
@@ -105,6 +107,8 @@ import {
     // Navigation
     home: Home,
     dashboard: Gauge,
+    store: Store,
+    shield: Shield,
     
     // Content
     fileText: FileText,

@@ -79,6 +79,28 @@ const vendorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verificationStatus: {
+      type: String,
+      enum: ['pending', 'verified', 'rejected'],
+      default: 'pending',
+    },
+    verificationDocuments: {
+      businessLicense: String,
+      foodSafetyPermit: String,
+      identityDocument: String,
+      businessRegistration: String,
+    },
+    verifiedAt: Date,
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    rejectedAt: Date,
+    rejectedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    rejectionReason: String,
     role: {
       type: String,
       default: "vendor",

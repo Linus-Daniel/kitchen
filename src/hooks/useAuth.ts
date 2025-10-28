@@ -54,9 +54,35 @@ export function useAuth() {
 
       return result
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       showToast.success('Login successful! Welcome back.')
       setError(null)
+      
+      // Wait for session to update, then redirect based on role
+      setTimeout(async () => {
+        try {
+          const response = await fetch('/api/auth/session')
+          const sessionData = await response.json()
+          
+          if (sessionData?.user?.role) {
+            switch (sessionData.user.role) {
+              case 'admin':
+                router.push('/admin')
+                break
+              case 'vendor':
+                router.push('/vendor')
+                break
+              default:
+                router.push('/')
+            }
+          } else {
+            router.push('/')
+          }
+        } catch (error) {
+          console.error('Error fetching session:', error)
+          router.push('/')
+        }
+      }, 500)
     },
     onError: (error: any) => {
       const errorMessage = error.message || 'Login failed'
@@ -173,11 +199,23 @@ export function useAuth() {
   // Logout function
   const logout = async () => {
     showToast.info('Logging out...')
+    const currentRole = session?.user?.role
     await signOut({ redirect: false })
     clearAuth()
     queryClient.clear()
     showToast.success('Logged out successfully. See you soon!')
-    router.push('/login')
+    
+    // Redirect to appropriate login page based on previous role
+    switch (currentRole) {
+      case 'vendor':
+        router.push('/login/vendor')
+        break
+      case 'admin':
+        router.push('/login') // Admins use regular login
+        break
+      default:
+        router.push('/login')
+    }
   }
 
   return {

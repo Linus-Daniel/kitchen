@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
+import Vendor from "@/models/Vendor";
 import Cart from "@/models/Cart";
 import { protect, ErrorResponse, errorHandler } from "@/lib/errorHandler";
 import { PaystackService } from "@/lib/paystack";
@@ -106,8 +107,9 @@ export async function POST(req: NextRequest) {
         // 2. Order placed notifications (in-app and email)
         await notificationService.sendOrderPlacedNotifications(order);
 
-        // 3. Send emails
-        const userDetails = await User.findById(user._id);
+        // 3. Send emails using the correct model based on role
+        const Model = user.role === 'vendor' ? Vendor : User;
+        const userDetails = await Model.findById(user._id);
         if (userDetails?.email) {
           // Send payment confirmation email
           await notificationService.sendEmailNotification(

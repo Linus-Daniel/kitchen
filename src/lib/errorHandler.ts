@@ -6,6 +6,21 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // adjust path to your next-auth config
 import { IUser, IVendor } from "@/types";
 
+// Helper function to get the appropriate model based on role
+export function getUserModel(role: string) {
+  return role === 'vendor' ? Vendor : User;
+}
+
+// Helper function to update user/vendor by ID with role-based model selection
+export async function updateUserById(userId: string, role: string, updateData: any, options: any = {}) {
+  const Model = getUserModel(role);
+  return await Model.findByIdAndUpdate(userId, updateData, { 
+    new: true, 
+    select: '-password',
+    ...options 
+  });
+}
+
 export class ErrorResponse extends Error {
   public statusCode: number;
   
@@ -54,13 +69,23 @@ export function errorHandler(err: MongooseError, req: NextRequest, res?: NextRes
   }, { status: (error as any).statusCode || 500 });
 }
 
-export async function protect(req: NextRequest): Promise<IUser> {
+export async function protect(req: NextRequest): Promise<IUser | IVendor> {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.email) {
     throw new ErrorResponse("Not authorized to access this route", 401);
   }
 
+  // Check if the user is a vendor first
+  if (session.user.role === 'vendor') {
+    const vendor = await Vendor.findOne({ email: session.user.email });
+    if (!vendor) {
+      throw new ErrorResponse("Vendor not found", 401);
+    }
+    return vendor;
+  }
+
+  // Default to regular user lookup
   const user = await User.findOne({ email: session.user.email });
   if (!user) {
     throw new ErrorResponse("User not found", 401);

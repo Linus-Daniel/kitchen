@@ -24,6 +24,7 @@ export interface IVendor extends Document {
   email: string
   password: string
   phone: string
+  role: 'vendor'
   address: {
     street: string
     city: string

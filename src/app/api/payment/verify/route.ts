@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
+import Vendor from "@/models/Vendor";
 import { protect, ErrorResponse, errorHandler } from "@/lib/errorHandler";
 import { emailService } from "@/lib/email";
 
@@ -86,7 +87,8 @@ export async function POST(req: NextRequest) {
 
       // Send payment confirmation email
       try {
-        const userDetails = await User.findById(user._id);
+        const Model = user.role === 'vendor' ? Vendor : User;
+        const userDetails = await Model.findById(user._id);
         if (userDetails?.email) {
           await emailService.sendPaymentConfirmation(userDetails.email, order, {
             paymentId: reference,

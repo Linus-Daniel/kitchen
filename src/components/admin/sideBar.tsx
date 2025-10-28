@@ -10,9 +10,9 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed inset-y-0 left-0 z-10 w-64 border-r border-gray-200 bg-white">
+    <div className="fixed inset-y-0 left-0 z-10 w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
       <div className="flex flex-col h-full">
-        <div className="flex items-center h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
           <Link href="/admin/" className="flex items-center gap-2">
           <motion.p 
               className="text-lg font-bold text-amber-600 flex items-center"
@@ -21,7 +21,7 @@ export function AdminSidebar() {
               <span className="mr-1">🍔</span>
               <span>FoodExpress</span>
             </motion.p>
-              <span>Admin</span>
+              <span className="text-gray-600 dark:text-gray-400">Admin</span>
           </Link>
         </div>
         
@@ -44,8 +44,8 @@ export function AdminSidebar() {
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                         isActive
-                          ? "bg-amber-500 text-primary-foreground"
-                          : "hover:bg-amber-100 hover:text-accent-foreground"
+                          ? "bg-amber-500 text-white dark:bg-amber-600"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:text-amber-700 dark:hover:text-amber-400"
                       )}
                     >
                       <Icon className="h-4 w-4" />

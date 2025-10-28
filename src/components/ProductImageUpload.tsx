@@ -70,9 +70,6 @@ export default function ProductImageUpload({
 
       const response = await fetch('/api/upload/product', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
         body: formData,
       });
 

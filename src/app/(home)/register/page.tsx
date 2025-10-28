@@ -1,6 +1,7 @@
 'use client';
-import { FormEvent, ChangeEvent, useState } from 'react';
+import { FormEvent, ChangeEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -25,7 +26,27 @@ const RegisterPage = () => {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { register } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (status === 'loading') return; // Still loading
+    
+    if (session?.user) {
+      // Redirect based on role
+      switch (session.user.role) {
+        case 'admin':
+          router.replace('/admin');
+          break;
+        case 'vendor':
+          router.replace('/vendor');
+          break;
+        default:
+          router.replace('/');
+      }
+    }
+  }, [session, status, router]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,6 +80,30 @@ const RegisterPage = () => {
       setIsLoading(false);
     }
   };
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-amber-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
+          <p className="mt-4 text-amber-700">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render register form if already authenticated
+  if (session?.user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-amber-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
+          <p className="mt-4 text-amber-700">Redirecting...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-amber-50 py-12 px-4">

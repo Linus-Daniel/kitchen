@@ -85,8 +85,9 @@ export async function POST(req: NextRequest) {
 
     // Send email notifications
     try {
-      // Get user details for email
-      const userDetails = await User.findById(user._id);
+      // Get user details for email using the correct model based on role
+      const Model = user.role === 'vendor' ? Vendor : User;
+      const userDetails = await Model.findById(user._id);
       
       // Send order confirmation to customer
       if (userDetails?.email) {

@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     
     const user = await protect(req);
     
+    
     // Ensure user is vendor or admin
     if (user.role !== 'vendor' && user.role !== 'admin') {
       throw new ErrorResponse("Access denied. Only vendors and admins can upload product images", 403);

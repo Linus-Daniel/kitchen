@@ -83,7 +83,6 @@ export default function AdminUserManager() {
 
       const response = await fetch(`/api/admin/users?${params}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
@@ -131,7 +130,6 @@ export default function AdminUserManager() {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
 

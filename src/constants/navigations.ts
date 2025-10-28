@@ -22,8 +22,18 @@ export const adminNavItems = [
     icon: "users",
   },
   {
-    title: "Payments",
-    href: "/admin/payments",
+    title: "Vendors",
+    href: "/admin/vendors",
+    icon: "store",
+  },
+  {
+    title: "Verification",
+    href: "/admin/vendors/verification",
+    icon: "shield",
+  },
+  {
+    title: "Transactions",
+    href: "/admin/transactions",
     icon: "creditCard",
   },
   {

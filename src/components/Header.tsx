@@ -8,6 +8,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationPanel } from './NotificationPanel';
+import { ModeToggle } from './mode-toggle';
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
@@ -42,7 +43,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -58,7 +59,7 @@ const Header = () => {
 
           {/* Mobile menu toggle */}
           <button 
-            className="md:hidden p-2 text-gray-700"
+            className="md:hidden p-2 text-gray-700 dark:text-gray-300"
             onClick={toggleMobileMenu}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
@@ -71,8 +72,8 @@ const Header = () => {
               {NAV_LINKS.map((link) => (
                 <Link href={link.path} key={link.name} passHref legacyBehavior>
                   <motion.a
-                    className={`font-medium hover:text-amber-600 transition-colors ${
-                      pathName === link.path ? 'text-amber-600' : 'text-gray-700'
+                    className={`font-medium hover:text-amber-600 dark:hover:text-amber-400 transition-colors ${
+                      pathName === link.path ? 'text-amber-600 dark:text-amber-400' : 'text-gray-700 dark:text-gray-300'
                     }`}
                     whileHover={{ y: -2 }}
                   >
@@ -84,7 +85,7 @@ const Header = () => {
 
             <motion.form 
               onSubmit={handleSearch}
-              className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-1"
+              className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-1"
               whileHover={{ scale: 1.05 }}
             >
               <input
@@ -92,63 +93,67 @@ const Header = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent outline-none w-32 lg:w-48"
+                className="bg-transparent outline-none w-32 lg:w-48 dark:text-gray-300 dark:placeholder-gray-400"
               />
               <button type="submit" aria-label="Search">
-                <FiSearch className="text-gray-500" />
+                <FiSearch className="text-gray-500 dark:text-gray-400" />
               </button>
             </motion.form>
 
-            {user ? (
-              <div className="flex items-center space-x-4">
-                {/* Notifications */}
-                <NotificationPanel />
+            <div className="flex items-center space-x-4">
+              <ModeToggle />
+              
+              {user ? (
+                <>
+                  {/* Notifications */}
+                  <NotificationPanel />
 
-                <Link href="/account" passHref legacyBehavior>
-                  <motion.a 
-                    className="p-2 text-gray-700 hover:text-amber-600"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <FiUser size={20} />
-                  </motion.a>
-                </Link>
+                  <Link href="/account" passHref legacyBehavior>
+                    <motion.a 
+                      className="p-2 text-gray-700 hover:text-amber-600 dark:text-gray-300 dark:hover:text-amber-400"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <FiUser size={20} />
+                    </motion.a>
+                  </Link>
 
-                <Link href="/favorites" passHref legacyBehavior>
-                  <motion.a 
-                    className="p-2 text-gray-700 hover:text-amber-600"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <FiHeart size={20} />
-                  </motion.a>
-                </Link>
+                  <Link href="/favorites" passHref legacyBehavior>
+                    <motion.a 
+                      className="p-2 text-gray-700 hover:text-amber-600 dark:text-gray-300 dark:hover:text-amber-400"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <FiHeart size={20} />
+                    </motion.a>
+                  </Link>
 
-                <Link href="/cart" passHref legacyBehavior>
-                  <motion.a 
-                    className="p-2 text-gray-700 hover:text-amber-600 relative"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <FiShoppingCart size={20} />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {Math.min(cartCount, 99)}
-                      </span>
-                    )}
-                  </motion.a>
-                </Link>
-              </div>
-            ) : (
-              <div className="flex gap-3">
-                <Link href="/login" className="bg-amber-400 px-4 py-1 rounded-2xl text-sm hover:bg-amber-500 transition-colors">
-                  Login
-                </Link>
-                <Link href="/register" className="text-sm px-4 py-1 border-2 rounded-full border-amber-400 hover:border-amber-500 transition-colors">
-                  Register
-                </Link>
-              </div>
-            )}
+                  <Link href="/cart" passHref legacyBehavior>
+                    <motion.a 
+                      className="p-2 text-gray-700 hover:text-amber-600 dark:text-gray-300 dark:hover:text-amber-400 relative"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <FiShoppingCart size={20} />
+                      {cartCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                          {Math.min(cartCount, 99)}
+                        </span>
+                      )}
+                    </motion.a>
+                  </Link>
+                </>
+              ) : (
+                <div className="flex gap-3">
+                  <Link href="/login" className="bg-amber-400 px-4 py-1 rounded-2xl text-sm hover:bg-amber-500 transition-colors">
+                    Login
+                  </Link>
+                  <Link href="/register" className="text-sm px-4 py-1 border-2 rounded-full border-amber-400 hover:border-amber-500 transition-colors">
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

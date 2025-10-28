@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -32,8 +33,28 @@ export default function VendorRegistrationPage() {
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
-  const router =  useRouter();
+  const { vendorRegister } = useAuth();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (status === 'loading') return; // Still loading
+    
+    if (session?.user) {
+      // Redirect based on role
+      switch (session.user.role) {
+        case 'admin':
+          router.replace('/admin');
+          break;
+        case 'vendor':
+          router.replace('/vendor');
+          break;
+        default:
+          router.replace('/');
+      }
+    }
+  }, [session, status, router]);
 
   const [formData, setFormData] = useState({
     businessName: '',
@@ -110,15 +131,39 @@ export default function VendorRegistrationPage() {
         cuisineType: [formData.cuisineType]
       };
 
-      const response = await apiClient.vendorRegister(vendorData as any,); // true indicates vendor registration
-      console.log(response);
-      router.replace("/login/vendor")
+      // Use the auth hook to register and auto-login
+      await vendorRegister(vendorData);
+      // The useAuth hook will handle automatic login and redirect to /vendor
       
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
       setIsLoading(false);
     }
   };
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-orange-700">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render register form if already authenticated
+  if (session?.user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-orange-700">Redirecting...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">

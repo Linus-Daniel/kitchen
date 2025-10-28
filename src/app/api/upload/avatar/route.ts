@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { protect, errorHandler, ErrorResponse } from "@/lib/errorHandler";
-import User from "@/models/User";
+import { protect, errorHandler, ErrorResponse, updateUserById } from "@/lib/errorHandler";
 import connectDB from "@/lib/db";
 import { CloudinaryService } from "@/lib/cloudinary";
 
@@ -27,15 +26,16 @@ export async function POST(req: NextRequest) {
 
     const uploadResult = await CloudinaryService.uploadAvatar(file);
 
-    // Update user avatar in database
-    const updatedUser = await User.findByIdAndUpdate(
+    // Update avatar in the appropriate model based on user role
+    const updatedEntity = await updateUserById(
       user._id,
-      { avatar: uploadResult.secure_url },
-      { new: true, select: '-password' }
+      user.role,
+      { avatar: uploadResult.secure_url }
     );
 
-    if (!updatedUser) {
-      throw new ErrorResponse("User not found", 404);
+    if (!updatedEntity) {
+      const entityType = user.role === 'vendor' ? 'Vendor' : 'User';
+      throw new ErrorResponse(`${entityType} not found`, 404);
     }
 
     return NextResponse.json({
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       message: "Avatar uploaded successfully",
       data: {
         avatar: uploadResult.secure_url,
-        user: updatedUser,
+        user: updatedEntity,
       },
     });
   } catch (error) {

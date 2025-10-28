@@ -150,6 +150,12 @@ export const authOptions: NextAuthOptions = {
         session.user.gender = token.gender as string
       }
       return session
+    },
+    async redirect({ url, baseUrl }) {
+      // Handle post-login redirects based on user role
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     }
   },
   pages: {

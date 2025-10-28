@@ -4,6 +4,7 @@ import { AdminNavbar } from "@/components/admin/navBar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/providers/Providers";
+import { AdminAuthGuard } from "@/components/admin/AdminAuthGuard";
 
 export default function AdminLayout({
   children,
@@ -29,17 +30,19 @@ export default function AdminLayout({
 
               {/* Main content with padding and animation */}
               <main className="flex-1 overflow-y-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className={cn(
-                    "p-4 sm:p-6 lg:p-8 mx-auto",
-                    "w-full max-w-screen-2xl" // Using standard screen size instead of 9xl
-                  )}
-                >
-                  {children}
-                </motion.div>
+                <AdminAuthGuard>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className={cn(
+                      "p-4 sm:p-6 lg:p-8 mx-auto",
+                      "w-full max-w-screen-2xl" // Using standard screen size instead of 9xl
+                    )}
+                  >
+                    {children}
+                  </motion.div>
+                </AdminAuthGuard>
               </main>
             </div>
           </div>

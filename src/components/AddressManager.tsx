@@ -60,7 +60,6 @@ export default function AddressManager() {
       setLoading(true);
       const response = await fetch('/api/user/addresses', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
@@ -115,7 +114,6 @@ export default function AddressManager() {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(formData),
       });
@@ -161,7 +159,6 @@ export default function AddressManager() {
       const response = await fetch(`/api/user/addresses/${addressId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
@@ -183,7 +180,6 @@ export default function AddressManager() {
       const response = await fetch(`/api/user/addresses/${addressId}`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
 

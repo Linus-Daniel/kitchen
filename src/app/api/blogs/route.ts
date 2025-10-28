@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       category,
       readTime,
       imageUrl,
-      author: user.name || user.businessName,
+      author: 'name' in user ? user.name : user.businessName,
     });
 
     return NextResponse.json(

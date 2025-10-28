@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,9 @@ export default function VendorNewProductPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState<Array<{value: string, label: string}>>([]);
+  const [dietaryOptions, setDietaryOptions] = useState<Array<{value: string, label: string}>>([]);
+  const [dataLoading, setDataLoading] = useState(true);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -40,15 +43,57 @@ export default function VendorNewProductPage() {
     isAvailable: true
   });
 
-  const categories = [
-    "appetizers", "main-course", "desserts", "beverages", "salads", 
-    "pizza", "burgers", "pasta", "seafood", "vegetarian", "vegan"
-  ];
+  // Load categories and dietary options from API
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
+        const [categoriesRes, dietaryRes] = await Promise.all([
+          fetch('/api/system/categories'),
+          fetch('/api/system/dietary-options')
+        ]);
 
-  const dietaryOptions = [
-    "vegetarian", "vegan", "gluten-free", "dairy-free", "nut-free", 
-    "halal", "kosher", "organic", "spicy", "low-carb"
-  ];
+        if (categoriesRes.ok && dietaryRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          const dietaryData = await dietaryRes.json();
+          
+          setCategories(categoriesData.data || []);
+          setDietaryOptions(dietaryData.data || []);
+        }
+      } catch (err) {
+        console.error('Failed to load options:', err);
+        // Fallback to static data
+        setCategories([
+          { value: "appetizers", label: "Appetizers" },
+          { value: "main-course", label: "Main Course" },
+          { value: "desserts", label: "Desserts" },
+          { value: "beverages", label: "Beverages" },
+          { value: "salads", label: "Salads" },
+          { value: "pizza", label: "Pizza" },
+          { value: "burgers", label: "Burgers" },
+          { value: "pasta", label: "Pasta" },
+          { value: "seafood", label: "Seafood" },
+          { value: "vegetarian", label: "Vegetarian" },
+          { value: "vegan", label: "Vegan" }
+        ]);
+        setDietaryOptions([
+          { value: "vegetarian", label: "Vegetarian" },
+          { value: "vegan", label: "Vegan" },
+          { value: "gluten-free", label: "Gluten Free" },
+          { value: "dairy-free", label: "Dairy Free" },
+          { value: "nut-free", label: "Nut Free" },
+          { value: "halal", label: "Halal" },
+          { value: "kosher", label: "Kosher" },
+          { value: "organic", label: "Organic" },
+          { value: "spicy", label: "Spicy" },
+          { value: "low-carb", label: "Low Carb" }
+        ]);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    loadOptions();
+  }, []);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -158,6 +203,17 @@ export default function VendorNewProductPage() {
     }
   };
 
+  if (dataLoading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading form options...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-6">
       <div className="mb-6">
@@ -210,8 +266,8 @@ export default function VendorNewProductPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -291,14 +347,14 @@ export default function VendorNewProductPage() {
               <Label>Dietary Options</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                 {dietaryOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
+                  <div key={option.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={option}
-                      checked={formData.dietary.includes(option)}
-                      onCheckedChange={(checked) => handleDietaryChange(option, checked as boolean)}
+                      id={option.value}
+                      checked={formData.dietary.includes(option.value)}
+                      onCheckedChange={(checked) => handleDietaryChange(option.value, checked as boolean)}
                     />
-                    <Label htmlFor={option} className="text-sm">
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                    <Label htmlFor={option.value} className="text-sm">
+                      {option.label}
                     </Label>
                   </div>
                 ))}

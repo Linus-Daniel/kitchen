@@ -5,6 +5,8 @@ import LoadingSpinner from './LoadingSpinner';
 import { FiCamera, FiUser, FiUpload } from 'react-icons/fi';
 
 interface AvatarUploadProps {
+  currentAvatar?: string;
+  onUploadComplete?: () => void;
   onUploadSuccess?: (avatarUrl: string) => void;
   onUploadError?: (error: string) => void;
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -12,6 +14,8 @@ interface AvatarUploadProps {
 }
 
 export default function AvatarUpload({ 
+  currentAvatar,
+  onUploadComplete,
   onUploadSuccess, 
   onUploadError, 
   size = 'md',
@@ -73,9 +77,6 @@ export default function AvatarUpload({
 
       const response = await fetch('/api/upload/avatar', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
         body: formData,
       });
 
@@ -89,6 +90,7 @@ export default function AvatarUpload({
       await updateProfile({ avatar: data.data.avatar });
       
       onUploadSuccess?.(data.data.avatar);
+      onUploadComplete?.();
       setPreview(null);
     } catch (error) {
       console.error('Avatar upload error:', error);
@@ -106,7 +108,7 @@ export default function AvatarUpload({
     }
   };
 
-  const avatarSrc = preview || user?.avatar;
+  const avatarSrc = preview || currentAvatar || user?.avatar;
 
   return (
     <div className="relative inline-block">
