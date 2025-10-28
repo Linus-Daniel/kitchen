@@ -191,16 +191,20 @@ export default function VendorDetailPage() {
   };
 
   const handleAddToCart = (product: Product) => {
-    addItem({
+    const productForCart = {
       id: product._id,
       name: product.name,
       price: product.price,
-      quantity: 1,
+      category: product.category,
       image: product.images[0],
-      vendor: vendor!._id,
-      vendorName: vendor!.name,
-      selectedOptions: []
-    });
+      description: product.description,
+      rating: product.rating,
+      cookTime: product.preparationTime,
+      options: [],
+      ingredients: [],
+      dietary: product.tags || []
+    };
+    addItem(productForCart, 1);
 
     showToast.success(`${product.name} added to cart!`);
   };
@@ -209,7 +213,7 @@ export default function VendorDetailPage() {
     if (!vendor) return { isOpen: false, message: '' };
     
     const now = new Date();
-    const currentDay = now.toLocaleLowerCase().substring(0, 3); // mon, tue, etc
+    const currentDay = now.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase(); // mon, tue, etc
     const currentTime = now.toTimeString().substring(0, 5); // HH:MM
     
     const todayHours = vendor.operatingHours[currentDay];

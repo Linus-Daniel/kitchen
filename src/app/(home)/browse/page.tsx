@@ -146,16 +146,20 @@ export default function BrowsePage() {
   };
 
   const handleAddToCart = (product: Product) => {
-    addItem({
+    const productForCart = {
       id: product._id,
       name: product.name,
       price: product.price,
-      quantity: 1,
+      category: product.category,
       image: product.images[0],
-      vendor: product.vendor._id,
-      vendorName: product.vendor.name,
-      selectedOptions: []
-    });
+      description: product.description,
+      rating: product.rating,
+      cookTime: product.preparationTime,
+      options: [],
+      ingredients: [],
+      dietary: product.tags
+    };
+    addItem(productForCart, 1);
 
     showToast.success(`${product.name} added to cart!`);
   };

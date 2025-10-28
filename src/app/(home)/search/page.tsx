@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -58,7 +58,7 @@ interface Vendor {
 }
 
 interface SearchFilters {
-  type: 'all' | 'products' | 'vendors';
+  type: 'all' | 'product' | 'vendor';
   category: string;
   priceRange: [number, number];
   rating: number;
@@ -71,7 +71,7 @@ const POPULAR_SEARCHES = [
   'Chicken', 'Salad', 'Dessert', 'Coffee', 'Fast Food', 'Healthy'
 ];
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -187,16 +187,20 @@ export default function SearchPage() {
   };
 
   const handleAddToCart = (product: Product) => {
-    addItem({
+    const productForCart = {
       id: product._id,
       name: product.name,
       price: product.price,
-      quantity: 1,
+      category: product.category,
       image: product.images[0],
-      vendor: product.vendor._id,
-      vendorName: product.vendor.name,
-      selectedOptions: []
-    });
+      description: product.description,
+      rating: product.rating,
+      cookTime: product.preparationTime,
+      options: [],
+      ingredients: [],
+      dietary: product.tags || []
+    };
+    addItem(productForCart, 1);
 
     showToast.success(`${product.name} added to cart!`);
   };
@@ -584,5 +588,13 @@ export default function SearchPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

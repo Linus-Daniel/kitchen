@@ -637,6 +637,80 @@ class ApiClient {
       url: `/admin/users/${id}`,
     });
   }
+
+  // Generic HTTP methods
+  async get(url: string, params?: any): Promise<ApiResponse<any>> {
+    const queryParams = params ? new URLSearchParams(params).toString() : '';
+    const fullUrl = queryParams ? `${url}?${queryParams}` : url;
+    
+    return this.request({
+      method: 'GET',
+      url: fullUrl,
+    });
+  }
+
+  async post(url: string, data?: any): Promise<ApiResponse<any>> {
+    return this.request({
+      method: 'POST',
+      url,
+      data,
+    });
+  }
+
+  async put(url: string, data?: any): Promise<ApiResponse<any>> {
+    return this.request({
+      method: 'PUT',
+      url,
+      data,
+    });
+  }
+
+  async patch(url: string, data?: any): Promise<ApiResponse<any>> {
+    return this.request({
+      method: 'PATCH',
+      url,
+      data,
+    });
+  }
+
+  async delete(url: string): Promise<ApiResponse<any>> {
+    return this.request({
+      method: 'DELETE',
+      url,
+    });
+  }
+
+  // Missing specific methods
+  async getCategories(): Promise<ApiResponse<any[]>> {
+    return this.request({
+      method: 'GET',
+      url: '/categories',
+    });
+  }
+
+  async getProductReviews(productId: string, pagination?: PaginationParams): Promise<ApiResponse<any[]>> {
+    const params = new URLSearchParams({ productId });
+    if (pagination) {
+      Object.entries(pagination).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value));
+        }
+      });
+    }
+    
+    return this.request({
+      method: 'GET',
+      url: `/reviews?${params.toString()}`,
+    });
+  }
+
+  async addFavorite(productId: string): Promise<ApiResponse<any>> {
+    return this.addToFavorites(productId);
+  }
+
+  async removeFavorite(productId: string): Promise<ApiResponse<any>> {
+    return this.removeFromFavorites(productId);
+  }
 }
 
 // Export singleton instance

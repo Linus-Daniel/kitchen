@@ -44,6 +44,8 @@ interface Product {
   preparationTime: string;
   isAvailable: boolean;
   tags: string[];
+  ingredients?: string[];
+  dietary?: string[];
   nutritionalInfo?: {
     calories: number;
     protein: number;
@@ -90,7 +92,7 @@ export default function ProductDetailPage() {
   const fetchProduct = async () => {
     try {
       const response = await apiClient.getProduct(params.id as string);
-      setProduct(response);
+      setProduct(response.data);
     } catch (error) {
       console.error('Error fetching product:', error);
       showToast.error('Failed to load product details');
@@ -147,16 +149,26 @@ export default function ProductDetailPage() {
       };
     });
 
-    addItem({
+    const productForCart = {
       id: product._id,
       name: product.name,
       price: totalPrice,
-      quantity,
+      category: product.category,
       image: product.images[0],
-      vendor: product.vendor._id,
-      vendorName: product.vendor.name,
-      selectedOptions: selectedOptionsArray
-    });
+      description: product.description,
+      rating: product.rating,
+      cookTime: product.preparationTime || '30 mins',
+      options: (product.options || []).map(opt => ({ name: opt.name, price: 0 })),
+      ingredients: product.ingredients || [],
+      dietary: product.dietary || []
+    };
+    
+    const selectedOptionsForCart = selectedOptionsArray.map(opt => ({
+      name: opt.choice,
+      price: opt.price
+    }));
+    
+    addItem(productForCart, quantity, selectedOptionsForCart);
 
     showToast.success(`${product.name} added to cart!`);
   };

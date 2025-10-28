@@ -5,7 +5,7 @@ import dbConnect from '@/lib/db';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,8 @@ export async function PATCH(
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const refundId = params.id;
+    const { id } = await params;
+    const refundId = id;
     const { status, vendorResponse, processedDate } = await request.json();
 
     if (!status) {
